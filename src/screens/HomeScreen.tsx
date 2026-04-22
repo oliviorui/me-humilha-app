@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   ImageBackground,
+  Pressable,
   StyleSheet,
   Text,
   View,
@@ -11,6 +12,7 @@ import { BlurView } from "expo-blur";
 import * as Sharing from "expo-sharing";
 import ViewShot from "react-native-view-shot";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -21,6 +23,7 @@ import Animated, {
 import ProgressBar from "../components/ProgressBar";
 import GenerateButton from "../components/GenerateButton";
 import SharePoster from "../components/SharePoster";
+import SideMenu from "../components/SideMenu";
 
 import { quotes, type Quote } from "../data/quotes";
 import { images, type AppImage } from "../data/images";
@@ -51,11 +54,13 @@ export default function HomeScreen() {
     getRandomItem(images)
   );
 
-  const [posterVariant, setPosterVariant] = useState<"square" | "story">(
-  "square"
-);
-
   const [isDailyMode, setIsDailyMode] = useState<boolean>(false);
+
+  const [posterVariant, setPosterVariant] = useState<"square" | "story">(
+    "square"
+  );
+
+  const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
   const yearProgress = getYearProgress();
 
@@ -63,6 +68,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     backgroundOpacity.value = 0.86;
+
     backgroundOpacity.value = withTiming(1, {
       duration: 280,
       easing: Easing.out(Easing.cubic),
@@ -96,8 +102,12 @@ export default function HomeScreen() {
     });
 
     setIsDailyMode(true);
+    setMenuVisible(false);
 
-    Alert.alert("Frase do dia", "Essa é a tua lapada oficial de hoje.");
+    Alert.alert(
+      "Frase do dia",
+      "Essa é a tua lapada oficial de hoje."
+    );
   }
 
   async function handleSave() {
@@ -109,14 +119,25 @@ export default function HomeScreen() {
         createdAt: Date.now(),
       });
 
+      setMenuVisible(false);
+
       if (!result.saved) {
-        Alert.alert("Já guardada", "Essa lapada já está nos favoritos.");
+        Alert.alert(
+          "Já guardada",
+          "Essa lapada já está nos favoritos."
+        );
         return;
       }
 
-      Alert.alert("Guardado", "Lapada salva com sucesso.");
+      Alert.alert(
+        "Guardado",
+        "Lapada salva com sucesso."
+      );
     } catch {
-      Alert.alert("Erro", "Não foi possível guardar a lapada.");
+      Alert.alert(
+        "Erro",
+        "Não foi possível guardar a lapada."
+      );
     }
   }
 
@@ -142,10 +163,12 @@ export default function HomeScreen() {
         return;
       }
 
+      setMenuVisible(false);
+
       await Sharing.shareAsync(capturedUri, {
         mimeType: "image/png",
         UTI: "public.png",
-        dialogTitle: "Compartilhar poster",
+        dialogTitle: "Exportar poster",
       });
     } catch {
       Alert.alert(
@@ -156,6 +179,7 @@ export default function HomeScreen() {
   }
 
   function handleOpenFavorites() {
+    setMenuVisible(false);
     router.push("/favorites");
   }
 
@@ -173,6 +197,8 @@ export default function HomeScreen() {
 
       const scheduled = await scheduleDailyNotification();
 
+      setMenuVisible(false);
+
       if (!scheduled) {
         Alert.alert(
           "Limitação do Expo Go",
@@ -181,23 +207,36 @@ export default function HomeScreen() {
         return;
       }
 
-      Alert.alert("Ativado", "Agora vais receber lapadas diárias.");
+      Alert.alert(
+        "Ativado",
+        "Agora vais receber lapadas diárias."
+      );
     } catch {
-      Alert.alert("Erro", "Não foi possível ativar.");
+      Alert.alert(
+        "Erro",
+        "Não foi possível ativar."
+      );
     }
   }
 
   if (!fontsLoaded) {
     return (
       <View style={styles.loadingScreen}>
-        <Text style={styles.loadingText}>A preparar a lapada...</Text>
+        <Text style={styles.loadingText}>
+          A preparar a lapada...
+        </Text>
       </View>
     );
   }
 
   return (
     <View style={styles.screen}>
-      <Animated.View style={[styles.backgroundLayer, backgroundAnimatedStyle]}>
+      <Animated.View
+        style={[
+          styles.backgroundLayer,
+          backgroundAnimatedStyle,
+        ]}
+      >
         <ImageBackground
           source={imageState.item}
           resizeMode="cover"
@@ -208,15 +247,46 @@ export default function HomeScreen() {
         </ImageBackground>
       </Animated.View>
 
+      <SideMenu
+        visible={menuVisible}
+        onClose={() => setMenuVisible(false)}
+        onSave={handleSave}
+        onExport={handleShare}
+        onFavorites={handleOpenFavorites}
+        onNotifications={handleEnableNotifications}
+        onDaily={handleDailyMode}
+      />
+
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
           <View style={styles.heroHeader}>
-            <BlurView intensity={24} tint="dark" style={styles.brandPill}>
-              <Text style={styles.brandPillText}>coach reverso.exe</Text>
-            </BlurView>
+            <View style={styles.topBar}>
+              <BlurView
+                intensity={24}
+                tint="dark"
+                style={styles.brandPill}
+              >
+                <Text style={styles.brandPillText}>
+                  coach reverso.exe
+                </Text>
+              </BlurView>
+
+              <Pressable
+                style={styles.menuButton}
+                onPress={() => setMenuVisible(true)}
+              >
+                <Ionicons
+                  name="menu-outline"
+                  size={26}
+                  color="#ffffff"
+                />
+              </Pressable>
+            </View>
 
             <Text style={styles.heroTitle}>
-              {isDailyMode ? "Frase do dia" : "Poster da lapada"}
+              {isDailyMode
+                ? "Frase do dia"
+                : "Poster da lapada"}
             </Text>
 
             <Text style={styles.heroSubtitle}>
@@ -243,18 +313,19 @@ export default function HomeScreen() {
           </ViewShot>
 
           <Text
-            style={{
-              color: "#ffffff",
-              marginBottom: 12,
-              fontWeight: "700",
-            }}
+            style={styles.formatToggle}
             onPress={() =>
               setPosterVariant((current) =>
-                current === "square" ? "story" : "square"
+                current === "square"
+                  ? "story"
+                  : "square"
               )
             }
           >
-            Formato: {posterVariant === "square" ? "1:1 Feed" : "9:16 Story"}
+            Formato:{" "}
+            {posterVariant === "square"
+              ? "1:1 Feed"
+              : "9:16 Story"}
           </Text>
 
           <ProgressBar
@@ -266,12 +337,7 @@ export default function HomeScreen() {
           <View style={styles.bottomPanel}>
             <GenerateButton
               onGenerate={handleGenerate}
-              onShare={handleShare}
-              onSave={handleSave}
-              onOpenFavorites={handleOpenFavorites}
-              onEnableNotifications={handleEnableNotifications}
-              onDaily={handleDailyMode}
-              isDaily={isDailyMode}
+              disabled={isDailyMode}
             />
           </View>
         </View>
@@ -287,41 +353,57 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+
   loadingText: {
     color: "#ffffff",
     fontSize: 18,
     fontWeight: "700",
   },
+
   screen: {
     flex: 1,
     backgroundColor: "#050505",
   },
+
   backgroundLayer: {
     ...StyleSheet.absoluteFillObject,
   },
+
   background: {
     flex: 1,
   },
+
   backgroundImage: {
     opacity: 0.28,
   },
+
   pageOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(5,8,12,0.68)",
   },
+
   safeArea: {
     flex: 1,
   },
+
   container: {
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 14,
   },
+
   heroHeader: {
     gap: 8,
     marginBottom: 14,
   },
+
+  topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
   brandPill: {
     alignSelf: "flex-start",
     overflow: "hidden",
@@ -331,6 +413,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
+
   brandPillText: {
     color: "#ffffff",
     fontSize: 12,
@@ -338,6 +421,18 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.9,
   },
+
+  menuButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 999,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+  },
+
   heroTitle: {
     color: "#ffffff",
     fontSize: 30,
@@ -345,16 +440,27 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
     lineHeight: 34,
   },
+
   heroSubtitle: {
     color: "rgba(255,255,255,0.72)",
     fontSize: 14,
     lineHeight: 20,
     fontWeight: "600",
   },
+
   posterCapture: {
     width: "100%",
     alignSelf: "center",
   },
+
+  formatToggle: {
+    color: "#ffffff",
+    marginTop: 12,
+    marginBottom: 12,
+    fontWeight: "700",
+    fontSize: 14,
+  },
+
   bottomPanel: {
     marginTop: 2,
   },
