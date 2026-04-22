@@ -1,13 +1,13 @@
 import { useRef, useState } from "react";
 import {
   Alert,
+  Image,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BlurView } from "expo-blur";
 import * as Sharing from "expo-sharing";
 import ViewShot from "react-native-view-shot";
 import { useRouter } from "expo-router";
@@ -17,6 +17,7 @@ import GenerateButton from "../components/GenerateButton";
 import SharePoster from "../components/SharePoster";
 import SideMenu from "../components/SideMenu";
 import ProgressBar from "../components/ProgressBar";
+import ThemeToggle from "../components/ThemeToggle";
 
 import { quotes, type Quote } from "../data/quotes";
 import { images, type AppImage } from "../data/images";
@@ -32,12 +33,14 @@ import {
 } from "../utils/notifications";
 import { getDailyQuote } from "../utils/getDailyQuote";
 import { useAppFonts } from "../hooks/useAppFonts";
+import { useAppTheme } from "../theme/ThemeProvider";
 
 export default function HomeScreen() {
   const router = useRouter();
   const shareCardRef = useRef<ViewShot | null>(null);
 
   const { fontsLoaded } = useAppFonts();
+  const { palette } = useAppTheme();
 
   const [quoteState, setQuoteState] = useState<RandomItemResult<Quote>>(() =>
     getRandomItem(quotes)
@@ -48,11 +51,9 @@ export default function HomeScreen() {
   );
 
   const [isDailyMode, setIsDailyMode] = useState<boolean>(false);
-
   const [posterVariant, setPosterVariant] = useState<"square" | "story">(
     "square"
   );
-
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
   const yearProgress = getYearProgress();
@@ -192,14 +193,16 @@ export default function HomeScreen() {
 
   if (!fontsLoaded) {
     return (
-      <View style={styles.loadingScreen}>
-        <Text style={styles.loadingText}>A preparar a lapada...</Text>
+      <View style={[styles.loadingScreen, { backgroundColor: palette.background }]}>
+        <Text style={[styles.loadingText, { color: palette.text }]}>
+          A preparar a lapada...
+        </Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { backgroundColor: palette.background }]}>
       <SideMenu
         visible={menuVisible}
         onClose={() => setMenuVisible(false)}
@@ -218,24 +221,43 @@ export default function HomeScreen() {
         <View style={styles.container}>
           <View style={styles.topBar}>
             <Pressable
-              style={styles.menuButton}
+              style={[
+                styles.menuButton,
+                {
+                  backgroundColor: palette.surface,
+                  borderColor: palette.border,
+                },
+              ]}
               onPress={() => setMenuVisible(true)}
             >
               <Ionicons
                 name="menu-outline"
                 size={26}
-                color="#ffffff"
+                color={palette.text}
               />
             </Pressable>
 
-            <BlurView
-              intensity={18}
-              tint="dark"
-              style={styles.brandPill}
-            >
-              <View style={styles.brandSolidLayer} />
-              <Text style={styles.brandPillText}>Me Humilha</Text>
-            </BlurView>
+            <View style={styles.rightCluster}>
+              <ThemeToggle />
+
+              <View
+                style={[
+                  styles.brandChip,
+                  {
+                    backgroundColor: palette.surfaceStrong,
+                    borderColor: palette.border,
+                  },
+                ]}
+              >
+                <Image
+                  source={require("../../assets/images/icon.png")}
+                  style={styles.brandLogo}
+                />
+                <Text style={[styles.brandText, { color: palette.text }]}>
+                  Me Humilha
+                </Text>
+              </View>
+            </View>
           </View>
 
           <View style={styles.posterArea}>
@@ -277,18 +299,15 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   loadingScreen: {
     flex: 1,
-    backgroundColor: "#050505",
     alignItems: "center",
     justifyContent: "center",
   },
   loadingText: {
-    color: "#ffffff",
     fontSize: 18,
     fontWeight: "700",
   },
   screen: {
     flex: 1,
-    backgroundColor: "#0A0A0F",
   },
   safeArea: {
     flex: 1,
@@ -304,28 +323,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 14,
-  },
-  brandPill: {
-    alignSelf: "flex-start",
-    overflow: "hidden",
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.10)",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: "rgba(16,16,22,0.88)",
-  },
-  brandSolidLayer: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(10,10,16,0.42)",
-  },
-  brandPillText: {
-    color: "#ffffff",
-    fontSize: 12,
-    fontWeight: "800",
-    textTransform: "uppercase",
-    letterSpacing: 0.9,
-    zIndex: 1,
+    gap: 12,
   },
   menuButton: {
     width: 48,
@@ -333,9 +331,32 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(20,20,28,0.92)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.10)",
+  },
+  rightCluster: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  brandChip: {
+    minHeight: 46,
+    borderRadius: 999,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  brandLogo: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+  },
+  brandText: {
+    fontSize: 13,
+    fontWeight: "900",
+    letterSpacing: 0.2,
   },
   posterArea: {
     flex: 1,

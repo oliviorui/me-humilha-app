@@ -1,10 +1,12 @@
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
-import { BlurView } from "expo-blur";
+import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
 
 import { setOnboardingSeen } from "../utils/appState";
+import { useAppTheme } from "../theme/ThemeProvider";
 
 export default function OnboardingScreen() {
+  const { palette } = useAppTheme();
+
   async function handleContinue() {
     try {
       await setOnboardingSeen();
@@ -15,33 +17,91 @@ export default function OnboardingScreen() {
   }
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.glowTop} />
-      <View style={styles.glowBottom} />
+    <View style={[styles.screen, { backgroundColor: palette.background }]}>
+      <View
+        style={[
+          styles.glowTop,
+          { backgroundColor: palette.accent, opacity: 0.12 },
+        ]}
+      />
+      <View
+        style={[
+          styles.glowBottom,
+          { backgroundColor: palette.primary, opacity: 0.12 },
+        ]}
+      />
 
-      <BlurView intensity={18} tint="dark" style={styles.card}>
-        <Text style={styles.brand}>Me Humilha</Text>
+      <View
+        style={[
+          styles.card,
+          {
+            backgroundColor: palette.surface,
+            borderColor: palette.border,
+            shadowColor: palette.shadow,
+          },
+        ]}
+      >
+        <View style={styles.topRow}>
+          <View
+            style={[
+              styles.brandChip,
+              {
+                backgroundColor: palette.surfaceStrong,
+                borderColor: palette.border,
+              },
+            ]}
+          >
+            <Image
+              source={require("../../assets/images/icon.png")}
+              style={styles.logo}
+            />
+            <Text style={[styles.brandChipText, { color: palette.text }]}>
+              Me Humilha
+            </Text>
+          </View>
+        </View>
 
-        <Text style={styles.title}>Bem-vindo.</Text>
+        <Text style={[styles.title, { color: palette.text }]}>Bem-vindo.</Text>
 
-        <Text style={styles.description}>
+        <Text style={[styles.description, { color: palette.text }]}>
           Aqui ninguém acredita no teu potencial.
         </Text>
 
-        <Text style={styles.descriptionSecondary}>
+        <Text
+          style={[styles.descriptionSecondary, { color: palette.textMuted }]}
+        >
           Gera lapadas, guarda as piores e exporta posters da tua decadência com estilo.
         </Text>
+
+        <View
+          style={[
+            styles.highlightBox,
+            {
+              backgroundColor: palette.surfaceStrong,
+              borderColor: palette.border,
+            },
+          ]}
+        >
+          <Text style={[styles.highlightText, { color: palette.textSoft }]}>
+            O app que te motiva no ódio.
+          </Text>
+        </View>
 
         <Pressable
           style={({ pressed }) => [
             styles.button,
-            pressed ? styles.buttonPressed : null,
+            {
+              backgroundColor: palette.primary,
+              opacity: pressed ? 0.85 : 1,
+            },
           ]}
           onPress={handleContinue}
         >
-          <Text style={styles.buttonText}>Pode começar a humilhação</Text>
+          <Text style={[styles.buttonText, { color: palette.primaryText }]}>
+            Pode começar a humilhação
+          </Text>
         </Pressable>
-      </BlurView>
+      </View>
     </View>
   );
 }
@@ -49,7 +109,6 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#0A0A0F",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
@@ -61,7 +120,6 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.04)",
   },
   glowBottom: {
     position: "absolute",
@@ -70,28 +128,43 @@ const styles = StyleSheet.create({
     width: 240,
     height: 240,
     borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.03)",
   },
   card: {
     width: "100%",
-    borderRadius: 24,
+    borderRadius: 28,
     paddingVertical: 28,
     paddingHorizontal: 24,
-    backgroundColor: "rgba(18,18,24,0.90)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-    overflow: "hidden",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.14,
+    shadowRadius: 24,
+    elevation: 4,
   },
-  brand: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 1,
+  topRow: {
     marginBottom: 18,
   },
+  brandChip: {
+    minHeight: 46,
+    alignSelf: "flex-start",
+    borderRadius: 999,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  logo: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+  },
+  brandChipText: {
+    fontSize: 13,
+    fontWeight: "900",
+    letterSpacing: 0.2,
+  },
   title: {
-    color: "#ffffff",
     fontSize: 34,
     lineHeight: 38,
     fontWeight: "900",
@@ -99,33 +172,37 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   description: {
-    color: "#ffffff",
     fontSize: 22,
     lineHeight: 30,
     fontWeight: "800",
     marginBottom: 10,
   },
   descriptionSecondary: {
-    color: "rgba(255,255,255,0.70)",
     fontSize: 15,
     lineHeight: 22,
     fontWeight: "600",
-    marginBottom: 26,
+    marginBottom: 22,
+  },
+  highlightBox: {
+    borderRadius: 18,
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginBottom: 24,
+  },
+  highlightText: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: "800",
   },
   button: {
     minHeight: 58,
     borderRadius: 18,
-    backgroundColor: "#ffffff",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 18,
   },
-  buttonPressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.985 }],
-  },
   buttonText: {
-    color: "#111111",
     fontSize: 16,
     fontWeight: "900",
     letterSpacing: -0.3,

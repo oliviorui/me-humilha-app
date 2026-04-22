@@ -6,15 +6,17 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "mehumilha",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.oliviocumbe.mehumilha"
     },
     "android": {
+      "package": "com.oliviocumbe.mehumilha",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundColor": "#0A0A0F"
+        "backgroundColor": "#0A0911"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
@@ -25,7 +27,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#0A0A0F",
+          "backgroundColor": "#0A0911",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 180
         }

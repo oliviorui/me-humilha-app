@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { BlurView } from "expo-blur";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, {
   Easing,
@@ -8,6 +7,8 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useAppTheme } from "../theme/ThemeProvider";
+import ThemeToggle from "./ThemeToggle";
 
 type PosterVariant = "square" | "story";
 
@@ -32,16 +33,22 @@ type MenuItemProps = {
 };
 
 function MenuItem({ icon, label, onPress }: MenuItemProps) {
+  const { palette } = useAppTheme();
+
   return (
     <Pressable
       style={({ pressed }) => [
         styles.menuItem,
-        pressed ? styles.menuItemPressed : null,
+        {
+          backgroundColor: palette.surfaceStrong,
+          borderColor: palette.border,
+          opacity: pressed ? 0.82 : 1,
+        },
       ]}
       onPress={onPress}
     >
-      <Ionicons name={icon} size={20} color="#ffffff" />
-      <Text style={styles.menuText}>{label}</Text>
+      <Ionicons name={icon} size={20} color={palette.text} />
+      <Text style={[styles.menuText, { color: palette.text }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -59,6 +66,8 @@ export default function SideMenu({
   posterVariant,
   onTogglePosterVariant,
 }: SideMenuProps) {
+  const { palette } = useAppTheme();
+
   const [isMounted, setIsMounted] = useState<boolean>(visible);
 
   const translateX = useSharedValue(-340);
@@ -119,62 +128,68 @@ export default function SideMenu({
   return (
     <View style={styles.wrapper}>
       <Animated.View style={[styles.overlayWrapper, overlayAnimatedStyle]}>
-        <Pressable style={styles.overlay} onPress={onClose} />
+        <Pressable
+          style={[styles.overlay, { backgroundColor: palette.overlay }]}
+          onPress={onClose}
+        />
       </Animated.View>
 
       <Animated.View style={[styles.menuContainer, menuAnimatedStyle]}>
-        <BlurView intensity={22} tint="dark" style={styles.menu}>
-          <View style={styles.menuSolidLayer} />
-
+        <View
+          style={[
+            styles.menu,
+            {
+              backgroundColor: palette.backgroundAlt,
+              borderRightColor: palette.border,
+            },
+          ]}
+        >
           <View style={styles.header}>
-            <Text style={styles.title}>Me Humilha</Text>
-
-            <Pressable onPress={onClose}>
-              <Ionicons
-                name="close-outline"
-                size={28}
-                color="#ffffff"
+            <View style={styles.headerLeft}>
+              <Image
+                source={require("../../assets/images/icon.png")}
+                style={styles.logo}
               />
-            </Pressable>
+              <Text style={[styles.title, { color: palette.text }]}>
+                Me Humilha
+              </Text>
+            </View>
+
+            <View style={styles.headerRight}>
+              <ThemeToggle />
+              <Pressable onPress={onClose}>
+                <Ionicons name="close-outline" size={28} color={palette.text} />
+              </Pressable>
+            </View>
           </View>
 
           <View style={styles.items}>
-            <MenuItem
-              icon="bookmark-outline"
-              label="Guardar"
-              onPress={onSave}
-            />
-
+            <MenuItem icon="bookmark-outline" label="Guardar" onPress={onSave} />
             <MenuItem
               icon="share-social-outline"
               label="Exportar"
               onPress={onExport}
             />
-
             <MenuItem
               icon="heart-outline"
               label="Favoritos"
               onPress={onFavorites}
             />
-
             <MenuItem
               icon="notifications-outline"
               label="Notificações"
               onPress={onNotifications}
             />
-
             <MenuItem
               icon="sunny-outline"
               label={isDaily ? "Frase do dia ativa" : "Frase do dia"}
               onPress={onDaily}
             />
-
             <MenuItem
               icon="shuffle-outline"
               label="Voltar ao aleatório"
               onPress={onRandom}
             />
-
             <MenuItem
               icon="resize-outline"
               label={
@@ -185,7 +200,7 @@ export default function SideMenu({
               onPress={onTogglePosterVariant}
             />
           </View>
-        </BlurView>
+        </View>
       </Animated.View>
     </View>
   );
@@ -203,40 +218,46 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.58)",
   },
   menuContainer: {
-    width: 300,
+    width: 310,
     height: "100%",
   },
   menu: {
     flex: 1,
-    paddingTop: 70,
+    paddingTop: 64,
     paddingHorizontal: 20,
-    backgroundColor: "rgba(8,8,12,0.90)",
     borderRightWidth: 1,
-    borderColor: "rgba(255,255,255,0.10)",
-    overflow: "hidden",
-  },
-  menuSolidLayer: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(8,8,12,0.72)",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 30,
-    zIndex: 1,
+    marginBottom: 28,
+    gap: 12,
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    flexShrink: 1,
+  },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  logo: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
   },
   title: {
-    color: "#ffffff",
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "900",
   },
   items: {
     gap: 14,
-    zIndex: 1,
   },
   menuItem: {
     flexDirection: "row",
@@ -245,15 +266,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 14,
     borderRadius: 18,
-    backgroundColor: "rgba(255,255,255,0.12)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.10)",
-  },
-  menuItemPressed: {
-    opacity: 0.82,
   },
   menuText: {
-    color: "#ffffff",
     fontSize: 15,
     fontWeight: "700",
     flexShrink: 1,

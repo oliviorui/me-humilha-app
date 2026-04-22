@@ -1,16 +1,54 @@
-import { StyleSheet, Text, View } from "react-native";
-import { BlurView } from "expo-blur";
+import { Image, StyleSheet, Text, View } from "react-native";
+import { useAppTheme } from "../theme/ThemeProvider";
 
 export default function LaunchScreen() {
-  return (
-    <View style={styles.screen}>
-      <View style={styles.glowTop} />
-      <View style={styles.glowBottom} />
+  const { palette } = useAppTheme();
 
-      <BlurView intensity={18} tint="dark" style={styles.card}>
-        <Text style={styles.brand}>Me Humilha</Text>
-        <Text style={styles.tagline}>carregando sua próxima decepção...</Text>
-      </BlurView>
+  return (
+    <View style={[styles.screen, { backgroundColor: palette.background }]}>
+      <View
+        style={[
+          styles.glowTop,
+          { backgroundColor: palette.accent, opacity: 0.12 },
+        ]}
+      />
+      <View
+        style={[
+          styles.glowBottom,
+          { backgroundColor: palette.primary, opacity: 0.12 },
+        ]}
+      />
+
+      <View
+        style={[
+          styles.card,
+          {
+            backgroundColor: palette.surface,
+            borderColor: palette.border,
+            shadowColor: palette.shadow,
+          },
+        ]}
+      >
+        <View
+          style={[
+            styles.logoWrap,
+            { backgroundColor: palette.surfaceStrong },
+          ]}
+        >
+          <Image
+            source={require("../../assets/images/icon.png")}
+            style={styles.logo}
+          />
+        </View>
+
+        <Text style={[styles.brand, { color: palette.text }]}>
+          Me Humilha
+        </Text>
+
+        <Text style={[styles.tagline, { color: palette.textMuted }]}>
+          carregando sua próxima decepção...
+        </Text>
+      </View>
     </View>
   );
 }
@@ -18,7 +56,6 @@ export default function LaunchScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#0A0A0F",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
@@ -30,7 +67,6 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.04)",
   },
   glowBottom: {
     position: "absolute",
@@ -39,21 +75,34 @@ const styles = StyleSheet.create({
     width: 240,
     height: 240,
     borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.03)",
   },
   card: {
     width: "100%",
-    borderRadius: 24,
-    paddingVertical: 28,
+    borderRadius: 28,
+    paddingVertical: 30,
     paddingHorizontal: 24,
-    backgroundColor: "rgba(18,18,24,0.88)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
     overflow: "hidden",
     alignItems: "center",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.14,
+    shadowRadius: 24,
+    elevation: 4,
+  },
+  logoWrap: {
+    width: 82,
+    height: 82,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 18,
+  },
+  logo: {
+    width: 58,
+    height: 58,
+    borderRadius: 18,
   },
   brand: {
-    color: "#ffffff",
     fontSize: 34,
     lineHeight: 38,
     fontWeight: "900",
@@ -61,7 +110,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   tagline: {
-    color: "rgba(255,255,255,0.72)",
     fontSize: 15,
     lineHeight: 21,
     fontWeight: "700",
