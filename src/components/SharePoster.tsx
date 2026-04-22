@@ -104,28 +104,22 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: "#111827",
   },
-
   posterSquare: {
     aspectRatio: 1,
   },
-
   posterStory: {
     aspectRatio: 9 / 16,
   },
-
   background: {
     flex: 1,
   },
-
   backgroundImage: {
     opacity: 1,
   },
-
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(32,54,74,0.28)",
   },
-
   frame: {
     flex: 1,
     borderWidth: 1,
@@ -134,22 +128,18 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     position: "relative",
   },
-
   frameSquare: {
     margin: 22,
   },
-
   frameStory: {
     margin: 18,
   },
-
   content: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 36,
   },
-
   quote: {
     color: "#ffffff",
     textAlign: "center",
@@ -164,77 +154,61 @@ const styles = StyleSheet.create({
     },
     textShadowRadius: 4,
   },
-
   quoteStory: {
     fontSize: 34,
     lineHeight: 48,
   },
-
   cornerBase: {
     position: "absolute",
     width: 22,
     height: 22,
     zIndex: 5,
   },
-
   cornerTop: {
     top: -1,
   },
-
   cornerBottom: {
     bottom: -1,
   },
-
   cornerLeft: {
     left: -1,
   },
-
   cornerRight: {
     right: -1,
   },
-
   cornerHorizontal: {
     position: "absolute",
     height: 1.4,
     width: 14,
     backgroundColor: "rgba(255,255,255,0.96)",
   },
-
   cornerVertical: {
     position: "absolute",
     width: 1.4,
     height: 14,
     backgroundColor: "rgba(255,255,255,0.96)",
   },
-
   cornerHorizontalTop: {
     top: 0,
   },
-
   cornerHorizontalBottom: {
     bottom: 0,
   },
-
   cornerHorizontalLeft: {
     left: 0,
   },
-
   cornerHorizontalRight: {
     right: 0,
   },
-
   cornerVerticalTop: {
     top: 0,
   },
-
   cornerVerticalBottom: {
     bottom: 0,
   },
-
   cornerVerticalLeft: {
     left: 0,
   },
-
   cornerVerticalRight: {
     right: 0,
   },

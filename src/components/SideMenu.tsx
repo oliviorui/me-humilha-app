@@ -23,11 +23,7 @@ type MenuItemProps = {
   onPress: () => void;
 };
 
-function MenuItem({
-  icon,
-  label,
-  onPress,
-}: MenuItemProps) {
+function MenuItem({ icon, label, onPress }: MenuItemProps) {
   return (
     <Pressable
       style={({ pressed }) => [
@@ -36,15 +32,8 @@ function MenuItem({
       ]}
       onPress={onPress}
     >
-      <Ionicons
-        name={icon}
-        size={20}
-        color="#ffffff"
-      />
-
-      <Text style={styles.menuText}>
-        {label}
-      </Text>
+      <Ionicons name={icon} size={20} color="#ffffff" />
+      <Text style={styles.menuText}>{label}</Text>
     </Pressable>
   );
 }
@@ -62,21 +51,15 @@ export default function SideMenu({
     return {
       transform: [
         {
-          translateX: withTiming(
-            visible ? 0 : 340,
-            {
-              duration: 280,
-              easing: Easing.out(Easing.cubic),
-            }
-          ),
+          translateX: withTiming(visible ? 0 : 340, {
+            duration: 280,
+            easing: Easing.out(Easing.cubic),
+          }),
         },
       ],
-      opacity: withTiming(
-        visible ? 1 : 0,
-        {
-          duration: 220,
-        }
-      ),
+      opacity: withTiming(visible ? 1 : 0, {
+        duration: 220,
+      }),
     };
   });
 
@@ -86,10 +69,7 @@ export default function SideMenu({
 
   return (
     <View style={styles.wrapper}>
-      <Pressable
-        style={styles.overlay}
-        onPress={onClose}
-      />
+      <Pressable style={styles.overlay} onPress={onClose} />
 
       <Animated.View
         style={[
@@ -103,9 +83,7 @@ export default function SideMenu({
           style={styles.menu}
         >
           <View style={styles.header}>
-            <Text style={styles.title}>
-              Menu
-            </Text>
+            <Text style={styles.title}>Me Humilha</Text>
 
             <Pressable onPress={onClose}>
               <Ionicons
@@ -160,17 +138,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
   },
-
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0,0,0,0.45)",
   },
-
   menuContainer: {
     width: 300,
     height: "100%",
   },
-
   menu: {
     flex: 1,
     paddingTop: 70,
@@ -179,24 +154,20 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
   },
-
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 30,
   },
-
   title: {
     color: "#ffffff",
     fontSize: 24,
     fontWeight: "900",
   },
-
   items: {
     gap: 14,
   },
-
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -208,11 +179,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.05)",
   },
-
   menuItemPressed: {
     opacity: 0.82,
   },
-
   menuText: {
     color: "#ffffff",
     fontSize: 15,

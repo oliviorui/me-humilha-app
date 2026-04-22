@@ -44,16 +44,13 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingHorizontal: 20,
   },
-
   buttonPressed: {
     opacity: 0.85,
     transform: [{ scale: 0.985 }],
   },
-
   buttonDisabled: {
     opacity: 0.45,
   },
-
   text: {
     color: "#111111",
     fontSize: 16,

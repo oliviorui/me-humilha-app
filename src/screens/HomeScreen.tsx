@@ -80,10 +80,7 @@ export default function HomeScreen() {
     setIsDailyMode(true);
     setMenuVisible(false);
 
-    Alert.alert(
-      "Frase do dia",
-      "Essa é a tua lapada oficial de hoje."
-    );
+    Alert.alert("Frase do dia", "Essa é a tua lapada oficial de hoje.");
   }
 
   async function handleSave() {
@@ -98,22 +95,13 @@ export default function HomeScreen() {
       setMenuVisible(false);
 
       if (!result.saved) {
-        Alert.alert(
-          "Já guardada",
-          "Essa lapada já está nos favoritos."
-        );
+        Alert.alert("Já guardada", "Essa lapada já está nos favoritos.");
         return;
       }
 
-      Alert.alert(
-        "Guardado",
-        "Lapada salva com sucesso."
-      );
+      Alert.alert("Guardado", "Lapada salva com sucesso.");
     } catch {
-      Alert.alert(
-        "Erro",
-        "Não foi possível guardar a lapada."
-      );
+      Alert.alert("Erro", "Não foi possível guardar a lapada.");
     }
   }
 
@@ -147,10 +135,7 @@ export default function HomeScreen() {
         dialogTitle: "Exportar poster",
       });
     } catch {
-      Alert.alert(
-        "Erro",
-        "Não foi possível compartilhar agora."
-      );
+      Alert.alert("Erro", "Não foi possível compartilhar agora.");
     }
   }
 
@@ -183,24 +168,16 @@ export default function HomeScreen() {
         return;
       }
 
-      Alert.alert(
-        "Ativado",
-        "Agora vais receber lapadas diárias."
-      );
+      Alert.alert("Ativado", "Agora vais receber lapadas diárias.");
     } catch {
-      Alert.alert(
-        "Erro",
-        "Não foi possível ativar."
-      );
+      Alert.alert("Erro", "Não foi possível ativar.");
     }
   }
 
   if (!fontsLoaded) {
     return (
       <View style={styles.loadingScreen}>
-        <Text style={styles.loadingText}>
-          A preparar a lapada...
-        </Text>
+        <Text style={styles.loadingText}>A preparar a lapada...</Text>
       </View>
     );
   }
@@ -226,9 +203,7 @@ export default function HomeScreen() {
                 tint="dark"
                 style={styles.brandPill}
               >
-                <Text style={styles.brandPillText}>
-                  coach reverso.exe
-                </Text>
+                <Text style={styles.brandPillText}>Me Humilha</Text>
               </BlurView>
 
               <Pressable
@@ -244,15 +219,13 @@ export default function HomeScreen() {
             </View>
 
             <Text style={styles.heroTitle}>
-              {isDailyMode
-                ? "Frase do dia"
-                : "Poster da lapada"}
+              {isDailyMode ? "Frase do dia" : "Lapada pronta"}
             </Text>
 
             <Text style={styles.heroSubtitle}>
               {isDailyMode
-                ? "Uma verdade inconveniente, em formato de poster."
-                : "Gera uma lapada e transforma isso em conteúdo compartilhável."}
+                ? "Uma humilhação diária em formato de poster."
+                : "Gera, guarda e exporta lapadas com estilo."}
             </Text>
           </View>
 
@@ -276,16 +249,11 @@ export default function HomeScreen() {
             style={styles.formatToggle}
             onPress={() =>
               setPosterVariant((current) =>
-                current === "square"
-                  ? "story"
-                  : "square"
+                current === "square" ? "story" : "square"
               )
             }
           >
-            Formato:{" "}
-            {posterVariant === "square"
-              ? "1:1 Feed"
-              : "9:16 Story"}
+            Formato: {posterVariant === "square" ? "1:1 Feed" : "9:16 Story"}
           </Text>
 
           <ProgressBar
@@ -313,40 +281,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   loadingText: {
     color: "#ffffff",
     fontSize: 18,
     fontWeight: "700",
   },
-
   screen: {
     flex: 1,
     backgroundColor: "#0A0A0F",
   },
-
   safeArea: {
     flex: 1,
   },
-
   container: {
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 14,
   },
-
   heroHeader: {
     gap: 8,
     marginBottom: 14,
   },
-
   topBar: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-
   brandPill: {
     alignSelf: "flex-start",
     overflow: "hidden",
@@ -356,7 +317,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
-
   brandPillText: {
     color: "#ffffff",
     fontSize: 12,
@@ -364,7 +324,6 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.9,
   },
-
   menuButton: {
     width: 48,
     height: 48,
@@ -375,7 +334,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.06)",
   },
-
   heroTitle: {
     color: "#ffffff",
     fontSize: 30,
@@ -383,19 +341,16 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
     lineHeight: 34,
   },
-
   heroSubtitle: {
     color: "rgba(255,255,255,0.62)",
     fontSize: 14,
     lineHeight: 20,
     fontWeight: "600",
   },
-
   posterCapture: {
     width: "100%",
     alignSelf: "center",
   },
-
   formatToggle: {
     color: "#ffffff",
     marginTop: 12,
@@ -403,7 +358,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 14,
   },
-
   bottomPanel: {
     marginTop: 2,
   },
