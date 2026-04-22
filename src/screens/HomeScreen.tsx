@@ -1,11 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Alert,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Alert, ImageBackground, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import * as Sharing from "expo-sharing";
@@ -18,9 +12,9 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import QuoteCard from "../components/QuoteCard";
 import ProgressBar from "../components/ProgressBar";
 import GenerateButton from "../components/GenerateButton";
+import SharePoster from "../components/SharePoster";
 
 import { quotes, type Quote } from "../data/quotes";
 import { images, type AppImage } from "../data/images";
@@ -172,69 +166,70 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.screen}>
-      <ViewShot
-        ref={shareCardRef}
-        options={{
-          format: "png",
-          quality: 1,
-        }}
-        style={styles.captureWrapper}
-      >
-        <Animated.View style={[styles.captureWrapper, backgroundAnimatedStyle]}>
-          <ImageBackground
-            source={imageState.item}
-            resizeMode="cover"
-            imageStyle={styles.backgroundImage}
-            style={styles.background}
+      <Animated.View style={[styles.backgroundLayer, backgroundAnimatedStyle]}>
+        <ImageBackground
+          source={imageState.item}
+          resizeMode="cover"
+          style={styles.background}
+          imageStyle={styles.backgroundImage}
+        >
+          <View style={styles.pageOverlay} />
+        </ImageBackground>
+      </Animated.View>
+
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <View style={styles.heroHeader}>
+            <BlurView intensity={24} tint="dark" style={styles.brandPill}>
+              <Text style={styles.brandPillText}>coach reverso.exe</Text>
+            </BlurView>
+
+            <Text style={styles.heroTitle}>
+              {isDailyMode ? "Frase do dia" : "Poster da lapada"}
+            </Text>
+
+            <Text style={styles.heroSubtitle}>
+              {isDailyMode
+                ? "Uma verdade inconveniente, em formato de poster."
+                : "Gera uma lapada e transforma isso em conteúdo compartilhável."}
+            </Text>
+          </View>
+
+          <ViewShot
+            ref={shareCardRef}
+            options={{
+              format: "png",
+              quality: 1,
+            }}
+            style={styles.posterCapture}
           >
-            <View style={styles.overlay} />
-            <View style={styles.topGlow} />
-            <View style={styles.bottomShade} />
+            <SharePoster
+              image={imageState.item}
+              quote={quoteState.item}
+              subtitle={isDailyMode ? "Frase do dia" : "Lapada aleatória"}
+              footer="coach reverso.exe"
+            />
+          </ViewShot>
 
-            <SafeAreaView style={styles.safeArea}>
-              <View style={styles.captureContent}>
-                <View style={styles.heroHeader}>
-                  <BlurView intensity={24} tint="dark" style={styles.brandPill}>
-                    <Text style={styles.brandPillText}>coach reverso.exe</Text>
-                  </BlurView>
+          <ProgressBar
+            progress={yearProgress.progress}
+            percentage={yearProgress.percentage}
+            year={yearProgress.year}
+          />
 
-                  <Text style={styles.heroTitle}>
-                    {isDailyMode ? "Frase do dia" : "Gerador de lapadas"}
-                  </Text>
-
-                  <Text style={styles.heroSubtitle}>
-                    {isDailyMode
-                      ? "Uma verdade inconveniente por dia."
-                      : "Humor ácido, caos visual e progresso existencial."}
-                  </Text>
-                </View>
-
-                <View style={styles.mainContent}>
-                  <QuoteCard quote={quoteState.item} isDaily={isDailyMode} />
-
-                  <ProgressBar
-                    progress={yearProgress.progress}
-                    percentage={yearProgress.percentage}
-                    year={yearProgress.year}
-                  />
-                </View>
-              </View>
-            </SafeAreaView>
-          </ImageBackground>
-        </Animated.View>
-      </ViewShot>
-
-      <View style={styles.bottomPanel}>
-        <GenerateButton
-          onGenerate={handleGenerate}
-          onShare={handleShare}
-          onSave={handleSave}
-          onOpenFavorites={handleOpenFavorites}
-          onEnableNotifications={handleEnableNotifications}
-          onDaily={handleDailyMode}
-          isDaily={isDailyMode}
-        />
-      </View>
+          <View style={styles.bottomPanel}>
+            <GenerateButton
+              onGenerate={handleGenerate}
+              onShare={handleShare}
+              onSave={handleSave}
+              onOpenFavorites={handleOpenFavorites}
+              onEnableNotifications={handleEnableNotifications}
+              onDaily={handleDailyMode}
+              isDaily={isDailyMode}
+            />
+          </View>
+        </View>
+      </SafeAreaView>
     </View>
   );
 }
@@ -244,48 +239,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#050505",
   },
-  captureWrapper: {
-    flex: 1,
+  backgroundLayer: {
+    ...StyleSheet.absoluteFillObject,
   },
   background: {
     flex: 1,
   },
   backgroundImage: {
-    opacity: 0.92,
+    opacity: 0.28,
   },
-  overlay: {
+  pageOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(6,6,8,0.44)",
-  },
-  topGlow: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 220,
-    backgroundColor: "rgba(255,255,255,0.05)",
-  },
-  bottomShade: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 320,
-    backgroundColor: "rgba(0,0,0,0.36)",
+    backgroundColor: "rgba(5,8,12,0.68)",
   },
   safeArea: {
     flex: 1,
   },
-  captureContent: {
+  container: {
     flex: 1,
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 18,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 14,
   },
   heroHeader: {
-    gap: 10,
-    paddingTop: 6,
+    gap: 8,
+    marginBottom: 14,
   },
   brandPill: {
     alignSelf: "flex-start",
@@ -305,26 +283,21 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     color: "#ffffff",
-    fontSize: 34,
+    fontSize: 30,
     fontWeight: "900",
     letterSpacing: -1,
-    lineHeight: 38,
-    maxWidth: "88%",
+    lineHeight: 34,
   },
   heroSubtitle: {
     color: "rgba(255,255,255,0.72)",
-    fontSize: 15,
-    lineHeight: 21,
+    fontSize: 14,
+    lineHeight: 20,
     fontWeight: "600",
-    maxWidth: "88%",
   },
-  mainContent: {
+  posterCapture: {
     width: "100%",
   },
   bottomPanel: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 20,
-    backgroundColor: "#050505",
+    marginTop: 2,
   },
 });
