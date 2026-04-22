@@ -157,10 +157,6 @@ export default function FavoritesScreen() {
         <View style={styles.container}>
           <View style={styles.header}>
             <View style={styles.topBar}>
-              <BlurView intensity={24} tint="dark" style={styles.brandPill}>
-                <Text style={styles.brandPillText}>Me Humilha</Text>
-              </BlurView>
-
               <Pressable
                 style={styles.backButton}
                 onPress={() => router.back()}
@@ -171,6 +167,11 @@ export default function FavoritesScreen() {
                   color="#ffffff"
                 />
               </Pressable>
+
+              <BlurView intensity={18} tint="dark" style={styles.brandPill}>
+                <View style={styles.brandSolidLayer} />
+                <Text style={styles.brandPillText}>Me Humilha</Text>
+              </BlurView>
             </View>
 
             <Text style={styles.title}>Favoritos</Text>
@@ -180,11 +181,14 @@ export default function FavoritesScreen() {
           </View>
 
           {favorites.length === 0 ? (
-            <BlurView intensity={22} tint="dark" style={styles.emptyCard}>
+            <BlurView intensity={18} tint="dark" style={styles.emptyCard}>
+              <View style={styles.emptySolidLayer} />
+
               <Ionicons
                 name="heart-dislike-outline"
                 size={36}
                 color="rgba(255,255,255,0.82)"
+                style={styles.emptyIcon}
               />
 
               <Text style={styles.emptyTitle}>Nada guardado ainda.</Text>
@@ -262,14 +266,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
+  backButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 999,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(20,20,28,0.92)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.10)",
+  },
   brandPill: {
     alignSelf: "flex-start",
     overflow: "hidden",
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
+    borderColor: "rgba(255,255,255,0.10)",
     paddingHorizontal: 12,
     paddingVertical: 8,
+    backgroundColor: "rgba(16,16,22,0.88)",
+  },
+  brandSolidLayer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(10,10,16,0.42)",
   },
   brandPillText: {
     color: "#ffffff",
@@ -277,16 +296,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     textTransform: "uppercase",
     letterSpacing: 0.9,
-  },
-  backButton: {
-    width: 46,
-    height: 46,
-    borderRadius: 999,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(255,255,255,0.04)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
+    zIndex: 1,
   },
   title: {
     color: "#ffffff",
@@ -303,21 +313,30 @@ const styles = StyleSheet.create({
   },
   emptyCard: {
     marginTop: 24,
-    borderRadius: 20,
+    borderRadius: 18,
     paddingVertical: 36,
     paddingHorizontal: 24,
     alignItems: "center",
     justifyContent: "center",
     gap: 12,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
+    borderColor: "rgba(255,255,255,0.10)",
     overflow: "hidden",
+    backgroundColor: "rgba(15,15,20,0.86)",
+  },
+  emptySolidLayer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(12,12,16,0.54)",
+  },
+  emptyIcon: {
+    zIndex: 1,
   },
   emptyTitle: {
     color: "#ffffff",
     fontSize: 22,
     fontWeight: "900",
     textAlign: "center",
+    zIndex: 1,
   },
   emptyText: {
     color: "rgba(255,255,255,0.68)",
@@ -325,6 +344,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     textAlign: "center",
     maxWidth: 280,
+    zIndex: 1,
   },
   listContent: {
     paddingBottom: 20,
@@ -387,7 +407,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 48,
     borderRadius: 14,
-    backgroundColor: "rgba(255,255,255,0.10)",
+    backgroundColor: "rgba(22,22,30,0.94)",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.10)",
     flexDirection: "row",
@@ -396,7 +416,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   removeButton: {
-    backgroundColor: "rgba(255,255,255,0.08)",
+    backgroundColor: "rgba(18,18,24,0.94)",
   },
   actionButtonPressed: {
     opacity: 0.84,

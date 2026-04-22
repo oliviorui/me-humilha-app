@@ -122,17 +122,10 @@ export default function SideMenu({
         <Pressable style={styles.overlay} onPress={onClose} />
       </Animated.View>
 
-      <Animated.View
-        style={[
-          styles.menuContainer,
-          menuAnimatedStyle,
-        ]}
-      >
-        <BlurView
-          intensity={28}
-          tint="dark"
-          style={styles.menu}
-        >
+      <Animated.View style={[styles.menuContainer, menuAnimatedStyle]}>
+        <BlurView intensity={22} tint="dark" style={styles.menu}>
+          <View style={styles.menuSolidLayer} />
+
           <View style={styles.header}>
             <Text style={styles.title}>Me Humilha</Text>
 
@@ -210,7 +203,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.45)",
+    backgroundColor: "rgba(0,0,0,0.58)",
   },
   menuContainer: {
     width: 300,
@@ -220,15 +213,21 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 70,
     paddingHorizontal: 20,
-    backgroundColor: "rgba(10,10,14,0.75)",
+    backgroundColor: "rgba(8,8,12,0.90)",
     borderRightWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
+    borderColor: "rgba(255,255,255,0.10)",
+    overflow: "hidden",
+  },
+  menuSolidLayer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(8,8,12,0.72)",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 30,
+    zIndex: 1,
   },
   title: {
     color: "#ffffff",
@@ -237,6 +236,7 @@ const styles = StyleSheet.create({
   },
   items: {
     gap: 14,
+    zIndex: 1,
   },
   menuItem: {
     flexDirection: "row",
@@ -245,9 +245,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 14,
     borderRadius: 18,
-    backgroundColor: "rgba(255,255,255,0.06)",
+    backgroundColor: "rgba(255,255,255,0.12)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.05)",
+    borderColor: "rgba(255,255,255,0.10)",
   },
   menuItemPressed: {
     opacity: 0.82,

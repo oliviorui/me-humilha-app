@@ -229,10 +229,11 @@ export default function HomeScreen() {
             </Pressable>
 
             <BlurView
-              intensity={24}
+              intensity={18}
               tint="dark"
               style={styles.brandPill}
             >
+              <View style={styles.brandSolidLayer} />
               <Text style={styles.brandPillText}>Me Humilha</Text>
             </BlurView>
           </View>
@@ -309,9 +310,14 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
+    borderColor: "rgba(255,255,255,0.10)",
     paddingHorizontal: 12,
     paddingVertical: 8,
+    backgroundColor: "rgba(16,16,22,0.88)",
+  },
+  brandSolidLayer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(10,10,16,0.42)",
   },
   brandPillText: {
     color: "#ffffff",
@@ -319,6 +325,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     textTransform: "uppercase",
     letterSpacing: 0.9,
+    zIndex: 1,
   },
   menuButton: {
     width: 48,
@@ -326,9 +333,9 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255,255,255,0.04)",
+    backgroundColor: "rgba(20,20,28,0.92)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
+    borderColor: "rgba(255,255,255,0.10)",
   },
   posterArea: {
     flex: 1,
