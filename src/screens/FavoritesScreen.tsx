@@ -1,10 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   Alert,
   FlatList,
   ImageBackground,
   Pressable,
-  Share,
   StyleSheet,
   Text,
   View,
@@ -13,16 +12,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
+import * as Sharing from "expo-sharing";
+import ViewShot from "react-native-view-shot";
 
 import {
   getFavorites,
   removeFavorite,
   type FavoriteItem,
 } from "../utils/favorites";
+import SharePoster from "../components/SharePoster";
+import { useAppFonts } from "../hooks/useAppFonts";
 
 export default function FavoritesScreen() {
   const router = useRouter();
+  const shareCardRef = useRef<ViewShot | null>(null);
+  const { fontsLoaded } = useAppFonts();
+
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [shareTarget, setShareTarget] = useState<FavoriteItem | null>(null);
 
   const loadFavorites = useCallback(async () => {
     const data = await getFavorites();
@@ -44,12 +51,41 @@ export default function FavoritesScreen() {
     }
   }
 
-  async function handleShare(item: FavoriteItem) {
+  async function handleExport(item: FavoriteItem) {
     try {
-      await Share.share({
-        message: item.quote,
+      const isSharingAvailable = await Sharing.isAvailableAsync();
+
+      if (!isSharingAvailable) {
+        Alert.alert(
+          "Erro",
+          "A partilha não está disponível neste dispositivo."
+        );
+        return;
+      }
+
+      setShareTarget(item);
+
+      await new Promise<void>((resolve) => {
+        setTimeout(() => resolve(), 150);
       });
+
+      const capturedUri = await shareCardRef.current?.capture?.();
+
+      if (!capturedUri) {
+        Alert.alert("Erro", "Não foi possível gerar a arte para exportar.");
+        setShareTarget(null);
+        return;
+      }
+
+      await Sharing.shareAsync(capturedUri, {
+        mimeType: "image/png",
+        UTI: "public.png",
+        dialogTitle: "Exportar poster",
+      });
+
+      setShareTarget(null);
     } catch {
+      setShareTarget(null);
       Alert.alert("Erro", "Não foi possível exportar esta lapada.");
     }
   }
@@ -64,46 +100,53 @@ export default function FavoritesScreen() {
           style={styles.card}
         >
           <View style={styles.cardOverlay} />
+          <View style={styles.outerBorder} />
 
-          <View style={styles.frame}>
-            <View style={styles.cardContent}>
-              <Text style={styles.cardQuote}>{item.quote}</Text>
+          <View style={styles.cardContent}>
+            <Text style={styles.cardQuote}>{item.quote}</Text>
 
-              <View style={styles.cardActions}>
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.actionButton,
-                    pressed ? styles.actionButtonPressed : null,
-                  ]}
-                  onPress={() => handleShare(item)}
-                >
-                  <Ionicons
-                    name="share-social-outline"
-                    size={16}
-                    color="#ffffff"
-                  />
-                  <Text style={styles.actionText}>Exportar</Text>
-                </Pressable>
+            <View style={styles.cardActions}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.actionButton,
+                  pressed ? styles.actionButtonPressed : null,
+                ]}
+                onPress={() => handleExport(item)}
+              >
+                <Ionicons
+                  name="share-social-outline"
+                  size={16}
+                  color="#ffffff"
+                />
+                <Text style={styles.actionText}>Exportar</Text>
+              </Pressable>
 
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.actionButton,
-                    styles.removeButton,
-                    pressed ? styles.actionButtonPressed : null,
-                  ]}
-                  onPress={() => handleRemove(item.id)}
-                >
-                  <Ionicons
-                    name="trash-outline"
-                    size={16}
-                    color="#ffffff"
-                  />
-                  <Text style={styles.actionText}>Remover</Text>
-                </Pressable>
-              </View>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.actionButton,
+                  styles.removeButton,
+                  pressed ? styles.actionButtonPressed : null,
+                ]}
+                onPress={() => handleRemove(item.id)}
+              >
+                <Ionicons
+                  name="trash-outline"
+                  size={16}
+                  color="#ffffff"
+                />
+                <Text style={styles.actionText}>Remover</Text>
+              </Pressable>
             </View>
           </View>
         </ImageBackground>
+      </View>
+    );
+  }
+
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingScreen}>
+        <Text style={styles.loadingText}>A preparar as lapadas...</Text>
       </View>
     );
   }
@@ -161,11 +204,42 @@ export default function FavoritesScreen() {
           )}
         </View>
       </SafeAreaView>
+
+      <View style={styles.hiddenCaptureArea}>
+        {shareTarget ? (
+          <ViewShot
+            ref={shareCardRef}
+            options={{
+              format: "png",
+              quality: 1,
+              result: "tmpfile",
+            }}
+            style={styles.hiddenPosterCapture}
+          >
+            <SharePoster
+              image={shareTarget.image}
+              quote={shareTarget.quote}
+              variant="square"
+            />
+          </ViewShot>
+        ) : null}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  loadingScreen: {
+    flex: 1,
+    backgroundColor: "#0A0A0F",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loadingText: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "700",
+  },
   screen: {
     flex: 1,
     backgroundColor: "#0A0A0F",
@@ -229,7 +303,7 @@ const styles = StyleSheet.create({
   },
   emptyCard: {
     marginTop: 24,
-    borderRadius: 28,
+    borderRadius: 20,
     paddingVertical: 36,
     paddingHorizontal: 24,
     alignItems: "center",
@@ -258,7 +332,7 @@ const styles = StyleSheet.create({
   },
   cardWrapper: {
     width: "100%",
-    borderRadius: 28,
+    borderRadius: 18,
     overflow: "hidden",
     backgroundColor: "#111827",
   },
@@ -271,21 +345,23 @@ const styles = StyleSheet.create({
   },
   cardOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(20,34,48,0.34)",
+    backgroundColor: "rgba(20,34,48,0.28)",
   },
-  frame: {
-    flex: 1,
-    margin: 18,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.75)",
-    borderRadius: 4,
-    overflow: "hidden",
+  outerBorder: {
+    ...StyleSheet.absoluteFillObject,
+    top: 8,
+    right: 8,
+    bottom: 8,
+    left: 8,
+    borderWidth: 1.2,
+    borderColor: "rgba(255,255,255,0.82)",
+    borderRadius: 8,
   },
   cardContent: {
     flex: 1,
     justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingVertical: 24,
+    paddingHorizontal: 22,
+    paddingVertical: 22,
   },
   cardQuote: {
     flex: 1,
@@ -310,7 +386,7 @@ const styles = StyleSheet.create({
   actionButton: {
     flex: 1,
     minHeight: 48,
-    borderRadius: 16,
+    borderRadius: 14,
     backgroundColor: "rgba(255,255,255,0.10)",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.10)",
@@ -329,5 +405,14 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 14,
     fontWeight: "800",
+  },
+  hiddenCaptureArea: {
+    position: "absolute",
+    top: -10000,
+    left: -10000,
+    opacity: 0,
+  },
+  hiddenPosterCapture: {
+    width: 1080,
   },
 });

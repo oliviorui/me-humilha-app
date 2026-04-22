@@ -1,11 +1,15 @@
+import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { BlurView } from "expo-blur";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, {
   Easing,
   useAnimatedStyle,
+  useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+
+type PosterVariant = "square" | "story";
 
 type SideMenuProps = {
   visible: boolean;
@@ -15,6 +19,10 @@ type SideMenuProps = {
   onFavorites: () => void;
   onNotifications: () => void;
   onDaily: () => void;
+  onRandom: () => void;
+  isDaily: boolean;
+  posterVariant: PosterVariant;
+  onTogglePosterVariant: () => void;
 };
 
 type MenuItemProps = {
@@ -46,35 +54,78 @@ export default function SideMenu({
   onFavorites,
   onNotifications,
   onDaily,
+  onRandom,
+  isDaily,
+  posterVariant,
+  onTogglePosterVariant,
 }: SideMenuProps) {
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateX: withTiming(visible ? 0 : 340, {
-            duration: 280,
-            easing: Easing.out(Easing.cubic),
-          }),
-        },
-      ],
-      opacity: withTiming(visible ? 1 : 0, {
+  const [isMounted, setIsMounted] = useState<boolean>(visible);
+
+  const translateX = useSharedValue(-340);
+  const overlayOpacity = useSharedValue(0);
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    if (visible) {
+      setIsMounted(true);
+
+      translateX.value = withTiming(0, {
+        duration: 280,
+        easing: Easing.out(Easing.cubic),
+      });
+
+      overlayOpacity.value = withTiming(1, {
         duration: 220,
-      }),
+      });
+    } else if (isMounted) {
+      translateX.value = withTiming(-340, {
+        duration: 260,
+        easing: Easing.in(Easing.cubic),
+      });
+
+      overlayOpacity.value = withTiming(0, {
+        duration: 200,
+      });
+
+      timeoutId = setTimeout(() => {
+        setIsMounted(false);
+      }, 280);
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [visible, isMounted, overlayOpacity, translateX]);
+
+  const menuAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }],
     };
   });
 
-  if (!visible) {
+  const overlayAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: overlayOpacity.value,
+    };
+  });
+
+  if (!isMounted) {
     return null;
   }
 
   return (
     <View style={styles.wrapper}>
-      <Pressable style={styles.overlay} onPress={onClose} />
+      <Animated.View style={[styles.overlayWrapper, overlayAnimatedStyle]}>
+        <Pressable style={styles.overlay} onPress={onClose} />
+      </Animated.View>
 
       <Animated.View
         style={[
           styles.menuContainer,
-          animatedStyle,
+          menuAnimatedStyle,
         ]}
       >
         <BlurView
@@ -121,8 +172,24 @@ export default function SideMenu({
 
             <MenuItem
               icon="sunny-outline"
-              label="Frase do dia"
+              label={isDaily ? "Frase do dia ativa" : "Frase do dia"}
               onPress={onDaily}
+            />
+
+            <MenuItem
+              icon="shuffle-outline"
+              label="Voltar ao aleatório"
+              onPress={onRandom}
+            />
+
+            <MenuItem
+              icon="resize-outline"
+              label={
+                posterVariant === "square"
+                  ? "Formato: 1:1 Feed"
+                  : "Formato: 9:16 Story"
+              }
+              onPress={onTogglePosterVariant}
             />
           </View>
         </BlurView>
@@ -136,10 +203,13 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     zIndex: 999,
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "flex-start",
+  },
+  overlayWrapper: {
+    ...StyleSheet.absoluteFillObject,
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     backgroundColor: "rgba(0,0,0,0.45)",
   },
   menuContainer: {
@@ -151,7 +221,7 @@ const styles = StyleSheet.create({
     paddingTop: 70,
     paddingHorizontal: 20,
     backgroundColor: "rgba(10,10,14,0.75)",
-    borderLeftWidth: 1,
+    borderRightWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
   },
   header: {
@@ -186,5 +256,6 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 15,
     fontWeight: "700",
+    flexShrink: 1,
   },
 });

@@ -13,10 +13,10 @@ import ViewShot from "react-native-view-shot";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
-import ProgressBar from "../components/ProgressBar";
 import GenerateButton from "../components/GenerateButton";
 import SharePoster from "../components/SharePoster";
 import SideMenu from "../components/SideMenu";
+import ProgressBar from "../components/ProgressBar";
 
 import { quotes, type Quote } from "../data/quotes";
 import { images, type AppImage } from "../data/images";
@@ -56,17 +56,23 @@ export default function HomeScreen() {
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
   const yearProgress = getYearProgress();
+  const percentageDecimal = yearProgress.progress * 100;
+
+  function generateRandomPoster() {
+    const nextQuote = getRandomItem(quotes, quoteState.index);
+    const nextImage = getRandomItem(images, imageState.index);
+
+    setQuoteState(nextQuote);
+    setImageState(nextImage);
+    setIsDailyMode(false);
+  }
 
   function handleGenerate() {
     if (isDailyMode) {
       return;
     }
 
-    const nextQuote = getRandomItem(quotes, quoteState.index);
-    const nextImage = getRandomItem(images, imageState.index);
-
-    setQuoteState(nextQuote);
-    setImageState(nextImage);
+    generateRandomPoster();
   }
 
   function handleDailyMode() {
@@ -81,6 +87,16 @@ export default function HomeScreen() {
     setMenuVisible(false);
 
     Alert.alert("Frase do dia", "Essa é a tua lapada oficial de hoje.");
+  }
+
+  function handleRandomMode() {
+    generateRandomPoster();
+    setMenuVisible(false);
+  }
+
+  function handleTogglePosterVariant() {
+    setPosterVariant((current) => (current === "square" ? "story" : "square"));
+    setMenuVisible(false);
   }
 
   async function handleSave() {
@@ -135,7 +151,7 @@ export default function HomeScreen() {
         dialogTitle: "Exportar poster",
       });
     } catch {
-      Alert.alert("Erro", "Não foi possível compartilhar agora.");
+      Alert.alert("Erro", "Não foi possível exportar agora.");
     }
   }
 
@@ -192,73 +208,56 @@ export default function HomeScreen() {
         onFavorites={handleOpenFavorites}
         onNotifications={handleEnableNotifications}
         onDaily={handleDailyMode}
+        onRandom={handleRandomMode}
+        isDaily={isDailyMode}
+        posterVariant={posterVariant}
+        onTogglePosterVariant={handleTogglePosterVariant}
       />
 
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          <View style={styles.heroHeader}>
-            <View style={styles.topBar}>
-              <BlurView
-                intensity={24}
-                tint="dark"
-                style={styles.brandPill}
-              >
-                <Text style={styles.brandPillText}>Me Humilha</Text>
-              </BlurView>
+          <View style={styles.topBar}>
+            <Pressable
+              style={styles.menuButton}
+              onPress={() => setMenuVisible(true)}
+            >
+              <Ionicons
+                name="menu-outline"
+                size={26}
+                color="#ffffff"
+              />
+            </Pressable>
 
-              <Pressable
-                style={styles.menuButton}
-                onPress={() => setMenuVisible(true)}
-              >
-                <Ionicons
-                  name="menu-outline"
-                  size={26}
-                  color="#ffffff"
-                />
-              </Pressable>
-            </View>
-
-            <Text style={styles.heroTitle}>
-              {isDailyMode ? "Frase do dia" : "Lapada pronta"}
-            </Text>
-
-            <Text style={styles.heroSubtitle}>
-              {isDailyMode
-                ? "Uma humilhação diária em formato de poster."
-                : "Gera, guarda e exporta lapadas com estilo."}
-            </Text>
+            <BlurView
+              intensity={24}
+              tint="dark"
+              style={styles.brandPill}
+            >
+              <Text style={styles.brandPillText}>Me Humilha</Text>
+            </BlurView>
           </View>
 
-          <ViewShot
-            ref={shareCardRef}
-            options={{
-              format: "png",
-              quality: 1,
-              result: "tmpfile",
-            }}
-            style={styles.posterCapture}
-          >
-            <SharePoster
-              image={imageState.item}
-              quote={quoteState.item}
-              variant={posterVariant}
-            />
-          </ViewShot>
-
-          <Text
-            style={styles.formatToggle}
-            onPress={() =>
-              setPosterVariant((current) =>
-                current === "square" ? "story" : "square"
-              )
-            }
-          >
-            Formato: {posterVariant === "square" ? "1:1 Feed" : "9:16 Story"}
-          </Text>
+          <View style={styles.posterArea}>
+            <ViewShot
+              ref={shareCardRef}
+              options={{
+                format: "png",
+                quality: 1,
+                result: "tmpfile",
+              }}
+              style={styles.posterCapture}
+            >
+              <SharePoster
+                image={imageState.item}
+                quote={quoteState.item}
+                variant={posterVariant}
+              />
+            </ViewShot>
+          </View>
 
           <ProgressBar
             progress={yearProgress.progress}
-            percentage={yearProgress.percentage}
+            percentage={percentageDecimal}
             year={yearProgress.year}
           />
 
@@ -299,14 +298,11 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 14,
   },
-  heroHeader: {
-    gap: 8,
-    marginBottom: 14,
-  },
   topBar: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginBottom: 14,
   },
   brandPill: {
     alignSelf: "flex-start",
@@ -334,31 +330,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.06)",
   },
-  heroTitle: {
-    color: "#ffffff",
-    fontSize: 30,
-    fontWeight: "900",
-    letterSpacing: -1,
-    lineHeight: 34,
-  },
-  heroSubtitle: {
-    color: "rgba(255,255,255,0.62)",
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: "600",
+  posterArea: {
+    flex: 1,
+    justifyContent: "center",
   },
   posterCapture: {
     width: "100%",
     alignSelf: "center",
   },
-  formatToggle: {
-    color: "#ffffff",
-    marginTop: 12,
-    marginBottom: 12,
-    fontWeight: "700",
-    fontSize: 14,
-  },
   bottomPanel: {
-    marginTop: 2,
+    marginTop: 8,
   },
 });

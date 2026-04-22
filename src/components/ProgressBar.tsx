@@ -21,11 +21,11 @@ export default function ProgressBar({
 }: ProgressBarProps) {
   const widthProgress = useSharedValue(0);
   const opacity = useSharedValue(0);
-  const translateY = useSharedValue(14);
+  const translateY = useSharedValue(10);
 
   useEffect(() => {
     widthProgress.value = withTiming(Math.max(progress, 0.02), {
-      duration: 550,
+      duration: 650,
       easing: Easing.out(Easing.cubic),
     });
 
@@ -55,17 +55,20 @@ export default function ProgressBar({
 
   return (
     <Animated.View style={[styles.wrapper, wrapperAnimatedStyle]}>
-      <BlurView intensity={24} tint="dark" style={styles.card}>
+      <BlurView intensity={26} tint="dark" style={styles.card}>
         <View style={styles.header}>
-          <Text style={styles.label}>Fim de {year}</Text>
-          <Text style={styles.value}>{percentage}%</Text>
+          <View>
+            <Text style={styles.label}>Fim de {year}</Text>
+            <Text style={styles.caption}>O ano segue acabando sem piedade.</Text>
+          </View>
+
+          <Text style={styles.value}>{percentage.toFixed(2)}%</Text>
         </View>
 
         <View style={styles.track}>
           <Animated.View style={[styles.fill, fillAnimatedStyle]} />
+          <View style={styles.glow} />
         </View>
-
-        <Text style={styles.caption}>O ano continua acabando. Sem emoção.</Text>
       </BlurView>
     </Animated.View>
   );
@@ -74,53 +77,63 @@ export default function ProgressBar({
 const styles = StyleSheet.create({
   wrapper: {
     width: "100%",
-    marginBottom: 18,
-    borderRadius: 22,
+    marginTop: 14,
+    marginBottom: 14,
+    borderRadius: 18,
     overflow: "hidden",
   },
   card: {
-    borderRadius: 22,
-    paddingVertical: 16,
+    borderRadius: 18,
     paddingHorizontal: 16,
-    backgroundColor: "rgba(12,12,14,0.36)",
+    paddingVertical: 16,
+    backgroundColor: "rgba(255,255,255,0.04)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
+    borderColor: "rgba(255,255,255,0.08)",
   },
   header: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 12,
     marginBottom: 12,
   },
   label: {
-    color: "rgba(255,255,255,0.72)",
-    fontSize: 13,
+    color: "#ffffff",
+    fontSize: 14,
     fontWeight: "800",
-    textTransform: "uppercase",
-    letterSpacing: 0.9,
+    letterSpacing: 0.3,
+  },
+  caption: {
+    color: "rgba(255,255,255,0.58)",
+    fontSize: 12,
+    fontWeight: "600",
+    marginTop: 4,
   },
   value: {
     color: "#ffffff",
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "900",
-    letterSpacing: -0.4,
+    letterSpacing: -0.6,
   },
   track: {
     width: "100%",
     height: 14,
-    backgroundColor: "rgba(255,255,255,0.12)",
     borderRadius: 999,
     overflow: "hidden",
-    marginBottom: 10,
+    backgroundColor: "rgba(255,255,255,0.10)",
+    position: "relative",
   },
   fill: {
     height: "100%",
     borderRadius: 999,
     backgroundColor: "#ffffff",
   },
-  caption: {
-    color: "rgba(255,255,255,0.56)",
-    fontSize: 12,
-    fontWeight: "600",
+  glow: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    width: 80,
+    right: 0,
+    backgroundColor: "rgba(255,255,255,0.08)",
   },
 });
