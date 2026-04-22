@@ -51,6 +51,10 @@ export default function HomeScreen() {
     getRandomItem(images)
   );
 
+  const [posterVariant, setPosterVariant] = useState<"square" | "story">(
+  "square"
+);
+
   const [isDailyMode, setIsDailyMode] = useState<boolean>(false);
 
   const yearProgress = getYearProgress();
@@ -121,23 +125,33 @@ export default function HomeScreen() {
       const isSharingAvailable = await Sharing.isAvailableAsync();
 
       if (!isSharingAvailable) {
-        Alert.alert("Erro", "A partilha não está disponível neste dispositivo.");
+        Alert.alert(
+          "Erro",
+          "A partilha não está disponível neste dispositivo."
+        );
         return;
       }
 
       const capturedUri = await shareCardRef.current?.capture?.();
 
       if (!capturedUri) {
-        Alert.alert("Erro", "Não foi possível gerar a imagem para partilhar.");
+        Alert.alert(
+          "Erro",
+          "Não foi possível gerar a arte para partilhar."
+        );
         return;
       }
 
       await Sharing.shareAsync(capturedUri, {
         mimeType: "image/png",
-        dialogTitle: "Compartilhar lapada",
+        UTI: "public.png",
+        dialogTitle: "Compartilhar poster",
       });
     } catch {
-      Alert.alert("Erro", "Não foi possível compartilhar agora.");
+      Alert.alert(
+        "Erro",
+        "Não foi possível compartilhar agora."
+      );
     }
   }
 
@@ -217,16 +231,31 @@ export default function HomeScreen() {
             options={{
               format: "png",
               quality: 1,
+              result: "tmpfile",
             }}
             style={styles.posterCapture}
           >
             <SharePoster
               image={imageState.item}
               quote={quoteState.item}
-              subtitle={isDailyMode ? "Frase do dia" : "Lapada aleatória"}
-              footer="coach reverso.exe"
+              variant={posterVariant}
             />
           </ViewShot>
+
+          <Text
+            style={{
+              color: "#ffffff",
+              marginBottom: 12,
+              fontWeight: "700",
+            }}
+            onPress={() =>
+              setPosterVariant((current) =>
+                current === "square" ? "story" : "square"
+              )
+            }
+          >
+            Formato: {posterVariant === "square" ? "1:1 Feed" : "9:16 Story"}
+          </Text>
 
           <ProgressBar
             progress={yearProgress.progress}
@@ -324,6 +353,7 @@ const styles = StyleSheet.create({
   },
   posterCapture: {
     width: "100%",
+    alignSelf: "center",
   },
   bottomPanel: {
     marginTop: 2,

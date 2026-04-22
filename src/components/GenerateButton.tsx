@@ -126,7 +126,7 @@ export default function GenerateButton({
                 onPress={onSave}
               />
               <ActionButton
-                label="Compartilhar"
+                label="Exportar"
                 icon="share-social-outline"
                 onPress={onShare}
               />
