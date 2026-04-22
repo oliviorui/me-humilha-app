@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Alert,
-  ImageBackground,
   Pressable,
   StyleSheet,
   Text,
@@ -13,12 +12,6 @@ import * as Sharing from "expo-sharing";
 import ViewShot from "react-native-view-shot";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
 
 import ProgressBar from "../components/ProgressBar";
 import GenerateButton from "../components/GenerateButton";
@@ -63,23 +56,6 @@ export default function HomeScreen() {
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
   const yearProgress = getYearProgress();
-
-  const backgroundOpacity = useSharedValue(1);
-
-  useEffect(() => {
-    backgroundOpacity.value = 0.86;
-
-    backgroundOpacity.value = withTiming(1, {
-      duration: 280,
-      easing: Easing.out(Easing.cubic),
-    });
-  }, [imageState.item, backgroundOpacity]);
-
-  const backgroundAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: backgroundOpacity.value,
-    };
-  });
 
   function handleGenerate() {
     if (isDailyMode) {
@@ -231,22 +207,6 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.screen}>
-      <Animated.View
-        style={[
-          styles.backgroundLayer,
-          backgroundAnimatedStyle,
-        ]}
-      >
-        <ImageBackground
-          source={imageState.item}
-          resizeMode="cover"
-          style={styles.background}
-          imageStyle={styles.backgroundImage}
-        >
-          <View style={styles.pageOverlay} />
-        </ImageBackground>
-      </Animated.View>
-
       <SideMenu
         visible={menuVisible}
         onClose={() => setMenuVisible(false)}
@@ -362,24 +322,7 @@ const styles = StyleSheet.create({
 
   screen: {
     flex: 1,
-    backgroundColor: "#050505",
-  },
-
-  backgroundLayer: {
-    ...StyleSheet.absoluteFillObject,
-  },
-
-  background: {
-    flex: 1,
-  },
-
-  backgroundImage: {
-    opacity: 0.28,
-  },
-
-  pageOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(5,8,12,0.68)",
+    backgroundColor: "#0A0A0F",
   },
 
   safeArea: {
@@ -409,7 +352,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.12)",
+    borderColor: "rgba(255,255,255,0.08)",
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
@@ -428,9 +371,9 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255,255,255,0.08)",
+    backgroundColor: "rgba(255,255,255,0.04)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
+    borderColor: "rgba(255,255,255,0.06)",
   },
 
   heroTitle: {
@@ -442,7 +385,7 @@ const styles = StyleSheet.create({
   },
 
   heroSubtitle: {
-    color: "rgba(255,255,255,0.72)",
+    color: "rgba(255,255,255,0.62)",
     fontSize: 14,
     lineHeight: 20,
     fontWeight: "600",
