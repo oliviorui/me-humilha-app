@@ -43,7 +43,7 @@ export async function scheduleDailyNotification(): Promise<boolean> {
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: "coach reverso.exe",
+        title: "Me Humilha",
         body: getRandomNotificationMessage(),
       },
       trigger: {

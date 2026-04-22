@@ -10,6 +10,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { BlurView } from "expo-blur";
+import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 
 import {
@@ -45,172 +47,286 @@ export default function FavoritesScreen() {
   async function handleShare(item: FavoriteItem) {
     try {
       await Share.share({
-        message: `${item.quote}\n\nGuardado no coach reverso.exe`,
+        message: item.quote,
       });
     } catch {
-      Alert.alert("Erro", "Não foi possível compartilhar este favorito.");
+      Alert.alert("Erro", "Não foi possível exportar esta lapada.");
     }
   }
 
   function renderItem({ item }: { item: FavoriteItem }) {
     return (
-      <ImageBackground
-        source={item.image}
-        resizeMode="cover"
-        imageStyle={styles.cardImage}
-        style={styles.card}
-      >
-        <View style={styles.cardOverlay} />
+      <View style={styles.cardWrapper}>
+        <ImageBackground
+          source={item.image}
+          resizeMode="cover"
+          imageStyle={styles.cardImage}
+          style={styles.card}
+        >
+          <View style={styles.cardOverlay} />
 
-        <View style={styles.cardContent}>
-          <Text style={styles.cardQuote}>{item.quote}</Text>
+          <View style={styles.frame}>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardQuote}>{item.quote}</Text>
 
-          <View style={styles.cardActions}>
-            <Pressable
-              style={styles.smallButton}
-              onPress={() => handleShare(item)}
-            >
-              <Text style={styles.smallButtonText}>Compartilhar</Text>
-            </Pressable>
+              <View style={styles.cardActions}>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.actionButton,
+                    pressed ? styles.actionButtonPressed : null,
+                  ]}
+                  onPress={() => handleShare(item)}
+                >
+                  <Ionicons
+                    name="share-social-outline"
+                    size={16}
+                    color="#ffffff"
+                  />
+                  <Text style={styles.actionText}>Exportar</Text>
+                </Pressable>
 
-            <Pressable
-              style={styles.smallButton}
-              onPress={() => handleRemove(item.id)}
-            >
-              <Text style={styles.smallButtonText}>Remover</Text>
-            </Pressable>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.actionButton,
+                    styles.removeButton,
+                    pressed ? styles.actionButtonPressed : null,
+                  ]}
+                  onPress={() => handleRemove(item.id)}
+                >
+                  <Ionicons
+                    name="trash-outline"
+                    size={16}
+                    color="#ffffff"
+                  />
+                  <Text style={styles.actionText}>Remover</Text>
+                </Pressable>
+              </View>
+            </View>
           </View>
-        </View>
-      </ImageBackground>
+        </ImageBackground>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <View style={styles.header}>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>Voltar</Text>
-        </Pressable>
+    <View style={styles.screen}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <View style={styles.topBar}>
+              <BlurView intensity={24} tint="dark" style={styles.brandPill}>
+                <Text style={styles.brandPillText}>Me Humilha</Text>
+              </BlurView>
 
-        <Text style={styles.title}>Favoritos</Text>
+              <Pressable
+                style={styles.backButton}
+                onPress={() => router.back()}
+              >
+                <Ionicons
+                  name="arrow-back-outline"
+                  size={22}
+                  color="#ffffff"
+                />
+              </Pressable>
+            </View>
 
-        <View style={styles.headerSpacer} />
-      </View>
+            <Text style={styles.title}>Favoritos</Text>
+            <Text style={styles.subtitle}>
+              As lapadas que te marcaram mais do que deviam.
+            </Text>
+          </View>
 
-      {favorites.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyTitle}>Nada guardado ainda.</Text>
-          <Text style={styles.emptyText}>
-            Guarda algumas lapadas e elas aparecem aqui.
-          </Text>
+          {favorites.length === 0 ? (
+            <BlurView intensity={22} tint="dark" style={styles.emptyCard}>
+              <Ionicons
+                name="heart-dislike-outline"
+                size={36}
+                color="rgba(255,255,255,0.82)"
+              />
+
+              <Text style={styles.emptyTitle}>Nada guardado ainda.</Text>
+
+              <Text style={styles.emptyText}>
+                Guarda algumas lapadas e elas aparecem aqui.
+              </Text>
+            </BlurView>
+          ) : (
+            <FlatList
+              data={favorites}
+              keyExtractor={(item) => item.id}
+              renderItem={renderItem}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.listContent}
+            />
+          )}
         </View>
-      ) : (
-        <FlatList
-          data={favorites}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
-          renderItem={renderItem}
-        />
-      )}
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#0A0A0F",
+  },
+  safeArea: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
     paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 12,
   },
   header: {
+    marginBottom: 16,
+    gap: 8,
+  },
+  topBar: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 8,
-    paddingBottom: 16,
+  },
+  brandPill: {
+    alignSelf: "flex-start",
+    overflow: "hidden",
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  brandPillText: {
+    color: "#ffffff",
+    fontSize: 12,
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 0.9,
   },
   backButton: {
-    backgroundColor: "rgba(255,255,255,0.12)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.16)",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 14,
-  },
-  backButtonText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "800",
-  },
-  title: {
-    color: "#fff",
-    fontSize: 22,
-    fontWeight: "900",
-  },
-  headerSpacer: {
-    width: 68,
-  },
-  emptyState: {
-    flex: 1,
+    width: 46,
+    height: 46,
+    borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.04)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.06)",
+  },
+  title: {
+    color: "#ffffff",
+    fontSize: 30,
+    fontWeight: "900",
+    letterSpacing: -1,
+    lineHeight: 34,
+  },
+  subtitle: {
+    color: "rgba(255,255,255,0.62)",
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: "600",
+  },
+  emptyCard: {
+    marginTop: 24,
+    borderRadius: 28,
+    paddingVertical: 36,
     paddingHorizontal: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    overflow: "hidden",
   },
   emptyTitle: {
-    color: "#fff",
+    color: "#ffffff",
     fontSize: 22,
     fontWeight: "900",
-    marginBottom: 10,
     textAlign: "center",
   },
   emptyText: {
-    color: "rgba(255,255,255,0.72)",
-    fontSize: 16,
+    color: "rgba(255,255,255,0.68)",
+    fontSize: 15,
+    lineHeight: 22,
     textAlign: "center",
-    lineHeight: 24,
+    maxWidth: 280,
   },
   listContent: {
-    paddingBottom: 24,
-    gap: 14,
+    paddingBottom: 20,
+    gap: 16,
+  },
+  cardWrapper: {
+    width: "100%",
+    borderRadius: 28,
+    overflow: "hidden",
+    backgroundColor: "#111827",
   },
   card: {
-    minHeight: 220,
-    borderRadius: 24,
-    overflow: "hidden",
-    justifyContent: "flex-end",
+    minHeight: 240,
+    justifyContent: "center",
   },
   cardImage: {
-    borderRadius: 24,
+    opacity: 1,
   },
   cardOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.52)",
+    backgroundColor: "rgba(20,34,48,0.34)",
+  },
+  frame: {
+    flex: 1,
+    margin: 18,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.75)",
+    borderRadius: 4,
+    overflow: "hidden",
   },
   cardContent: {
-    padding: 18,
+    flex: 1,
+    justifyContent: "space-between",
+    paddingHorizontal: 24,
+    paddingVertical: 24,
   },
   cardQuote: {
-    color: "#fff",
-    fontSize: 22,
-    fontWeight: "900",
-    lineHeight: 30,
-    marginBottom: 16,
+    flex: 1,
+    color: "#ffffff",
+    textAlign: "center",
+    textAlignVertical: "center",
+    fontSize: 28,
+    lineHeight: 38,
+    fontWeight: "700",
+    fontFamily: "CormorantGaramond_700Bold",
+    textShadowColor: "rgba(0,0,0,0.28)",
+    textShadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    textShadowRadius: 4,
   },
   cardActions: {
     flexDirection: "row",
-    justifyContent: "flex-end",
     gap: 10,
   },
-  smallButton: {
-    backgroundColor: "rgba(255,255,255,0.18)",
+  actionButton: {
+    flex: 1,
+    minHeight: 48,
+    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.10)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.2)",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 14,
+    borderColor: "rgba(255,255,255,0.10)",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
   },
-  smallButtonText: {
-    color: "#fff",
+  removeButton: {
+    backgroundColor: "rgba(255,255,255,0.08)",
+  },
+  actionButtonPressed: {
+    opacity: 0.84,
+  },
+  actionText: {
+    color: "#ffffff",
     fontSize: 14,
     fontWeight: "800",
   },
