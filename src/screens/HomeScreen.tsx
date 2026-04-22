@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, ImageBackground, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import * as Sharing from "expo-sharing";
@@ -29,10 +35,13 @@ import {
   scheduleDailyNotification,
 } from "../utils/notifications";
 import { getDailyQuote } from "../utils/getDailyQuote";
+import { useAppFonts } from "../hooks/useAppFonts";
 
 export default function HomeScreen() {
   const router = useRouter();
   const shareCardRef = useRef<ViewShot | null>(null);
+
+  const { fontsLoaded } = useAppFonts();
 
   const [quoteState, setQuoteState] = useState<RandomItemResult<Quote>>(() =>
     getRandomItem(quotes)
@@ -164,6 +173,14 @@ export default function HomeScreen() {
     }
   }
 
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingScreen}>
+        <Text style={styles.loadingText}>A preparar a lapada...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.screen}>
       <Animated.View style={[styles.backgroundLayer, backgroundAnimatedStyle]}>
@@ -235,6 +252,17 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  loadingScreen: {
+    flex: 1,
+    backgroundColor: "#050505",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loadingText: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "700",
+  },
   screen: {
     flex: 1,
     backgroundColor: "#050505",
