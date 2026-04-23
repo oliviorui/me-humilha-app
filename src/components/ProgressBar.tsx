@@ -8,94 +8,124 @@ type ProgressBarProps = {
   year: number;
 };
 
+const yearMessages: string[] = [
+  "o ano está acabando e olha vc aí, fazendo nada mesmo.",
+  "o tempo tá passando e tu continuas em modo decorativo.",
+  "mais um ano indo embora e tua grande virada ainda em rascunho.",
+  "o calendário anda. tu ensaias.",
+  "o ano quase fecha e o caos continua em dia.",
+];
+
+function getYearMessage(progress: number): string {
+  const index = Math.min(
+    yearMessages.length - 1,
+    Math.floor(progress * yearMessages.length)
+  );
+
+  return yearMessages[index];
+}
+
 export default function ProgressBar({
   progress,
   percentage,
   year,
 }: ProgressBarProps) {
   const { palette } = useAppTheme();
+
   const progressWidth: `${number}%` = `${Math.max(progress * 100, 2)}%`;
+  const message = getYearMessage(progress);
 
   return (
     <View
       style={[
-        styles.card,
+        styles.yearBar,
         {
           backgroundColor: palette.surface,
           borderColor: palette.border,
-          shadowColor: palette.shadow,
         },
       ]}
     >
-      <View style={styles.row}>
-        <Text style={[styles.label, { color: palette.textMuted }]}>
+      <View style={styles.topRow}>
+        <Text style={[styles.yearLabel, { color: palette.textMuted }]}>
           FIM DE {year}
         </Text>
 
-        <Text style={[styles.value, { color: palette.primaryStrong }]}>
+        <Text style={[styles.yearPct, { color: palette.accent2 }]}>
           {percentage.toFixed(2)}%
         </Text>
       </View>
 
       <View
         style={[
-          styles.track,
-          {
-            backgroundColor: palette.surfaceSoft,
-          },
+          styles.yearTrack,
+          { backgroundColor: palette.progressBg },
         ]}
       >
         <LinearGradient
-          colors={[palette.primary, palette.accent2, palette.accent]}
+          colors={[palette.accent2, palette.accent3, palette.accent]}
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
           style={[
-            styles.fill,
+            styles.yearFill,
             {
               width: progressWidth,
+              shadowColor: palette.accent2,
             },
           ]}
         />
       </View>
+
+      <Text style={[styles.helperText, { color: palette.textMuted }]}>
+        {message}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
+  yearBar: {
     borderWidth: 1,
-    borderRadius: 24,
+    borderRadius: 16,
+    paddingVertical: 13,
     paddingHorizontal: 18,
-    paddingVertical: 16,
     marginBottom: 18,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.12,
-    shadowRadius: 20,
-    elevation: 3,
   },
-  row: {
+  topRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    gap: 14,
+    marginBottom: 9,
   },
-  label: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 3,
+  yearLabel: {
+    flex: 1,
+    fontFamily: "DMSans_500Medium",
+    fontSize: 10,
+    letterSpacing: 2.5,
+    textTransform: "uppercase",
   },
-  value: {
+  yearPct: {
+    fontFamily: "BebasNeue_400Regular",
     fontSize: 26,
-    fontWeight: "900",
-    letterSpacing: -0.8,
+    letterSpacing: 1,
+    lineHeight: 26,
+    flexShrink: 0,
   },
-  track: {
-    height: 6,
+  yearTrack: {
+    height: 4,
     borderRadius: 999,
     overflow: "hidden",
   },
-  fill: {
+  yearFill: {
     height: "100%",
     borderRadius: 999,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+  },
+  helperText: {
+    marginTop: 10,
+    fontFamily: "DMSans_400Regular",
+    fontSize: 11.5,
+    lineHeight: 16,
   },
 });

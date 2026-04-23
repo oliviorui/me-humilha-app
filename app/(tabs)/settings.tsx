@@ -2,51 +2,55 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import AppHeader from "../../src/components/AppHeader";
-import ProgressBar from "../../src/components/ProgressBar";
 import { useAppTheme } from "../../src/theme/ThemeProvider";
-import { getYearProgress } from "../../src/utils/getYearProgress";
+import { useAppFonts } from "../../src/hooks/useAppFonts";
+import ScreenBackground from "../../src/components/ScreenBackground";
 
 export default function SettingsTab() {
   const { palette } = useAppTheme();
-  const yearProgress = getYearProgress();
+  const { fontsLoaded } = useAppFonts();
+
+  if (!fontsLoaded) {
+    return <View style={[styles.screen, { backgroundColor: palette.bg }]} />;
+  }
 
   return (
-    <View style={[styles.screen, { backgroundColor: palette.background }]}>
+    <View style={[styles.screen, { backgroundColor: palette.bg }]}>
       <AppHeader />
 
-      <ProgressBar
-        progress={yearProgress.progress}
-        percentage={yearProgress.percentage}
-        year={yearProgress.year}
-      />
-
-      <Text style={[styles.title, { color: palette.text }]}>DEFINIÇÕES</Text>
-
-      <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
-        PREFERÊNCIAS
+      <Text style={[styles.screenTitle, { color: palette.text }]}>
+        DEFINIÇÕES
       </Text>
 
-      <SettingsRow
-        icon="notifications-outline"
-        label="Notificações"
-        value="Em breve"
-      />
+      <View style={styles.section}>
+        <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
+          Preferências
+        </Text>
 
-      <SettingsRow
-        icon="sunny-outline"
-        label="Frase do dia"
-        value="Em breve"
-      />
+        <SettingsItem
+          icon="notifications-outline"
+          label="Notificações"
+          badge="Em breve"
+        />
 
-      <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
-        EXPORTAÇÃO
-      </Text>
+        <SettingsItem
+          icon="sunny-outline"
+          label="Frase do dia"
+          badge="Em breve"
+        />
+      </View>
 
-      <SettingsRow
-        icon="image-outline"
-        label="Formato de exportação"
-        value="1:1 Feed"
-      />
+      <View style={styles.section}>
+        <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
+          Exportação
+        </Text>
+
+        <SettingsItem
+          icon="image-outline"
+          label="Formato de exportação"
+          value="1:1 Feed"
+        />
+      </View>
 
       <Text style={[styles.footer, { color: palette.textMuted }]}>
         v1.0 · Feito com desamor
@@ -55,114 +59,130 @@ export default function SettingsTab() {
   );
 }
 
-type SettingsRowProps = {
+type SettingsItemProps = {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
-  value: string;
+  badge?: string;
+  value?: string;
 };
 
-function SettingsRow({ icon, label, value }: SettingsRowProps) {
+function SettingsItem({ icon, label, badge, value }: SettingsItemProps) {
   const { palette } = useAppTheme();
 
   return (
-    <Pressable
-      style={[
-        styles.row,
-        {
-          backgroundColor: palette.surface,
-          borderColor: palette.border,
-        },
-      ]}
-    >
-      <View
-        style={[
-          styles.iconBox,
-          { backgroundColor: palette.surfaceSoft },
-        ]}
-      >
-        <Ionicons
-          name={icon}
-          size={22}
-          color={palette.primary}
-        />
-      </View>
+    <ScreenBackground>
+      <View style={styles.screen}>
+        <AppHeader />
 
-      <Text style={[styles.rowLabel, { color: palette.text }]}>
-        {label}
-      </Text>
+        <Text style={[styles.screenTitle, { color: palette.text }]}>
+          DEFINIÇÕES
+        </Text>
 
-      <View
-        style={[
-          styles.pill,
-          { backgroundColor: palette.surfaceSoft },
-        ]}
-      >
-        <Text style={[styles.rowValue, { color: palette.primaryStrong }]}>
-          {value}
+        <View style={styles.section}>
+          <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
+            Preferências
+          </Text>
+
+          <SettingsItem
+            icon="notifications-outline"
+            label="Notificações"
+            badge="Em breve"
+          />
+
+          <SettingsItem
+            icon="sunny-outline"
+            label="Frase do dia"
+            badge="Em breve"
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
+            Exportação
+          </Text>
+
+          <SettingsItem
+            icon="image-outline"
+            label="Formato de exportação"
+            value="1:1 Feed"
+          />
+        </View>
+
+        <Text style={[styles.footer, { color: palette.textMuted }]}>
+          v1.0 · Feito com desamor
         </Text>
       </View>
-    </Pressable>
+    </ScreenBackground>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    paddingTop: 18,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingBottom: 16,
   },
-  title: {
-    fontSize: 26,
-    fontWeight: "900",
-    letterSpacing: 1,
+  screenTitle: {
+    fontFamily: "BebasNeue_400Regular",
+    fontSize: 30,
+    letterSpacing: 2,
     marginBottom: 16,
   },
-  sectionLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 3,
-    marginBottom: 12,
-    marginTop: 10,
+  section: {
+    marginBottom: 22,
   },
-  row: {
-    minHeight: 112,
-    borderRadius: 24,
+  sectionLabel: {
+    fontFamily: "DMSans_500Medium",
+    fontSize: 10,
+    letterSpacing: 2,
+    textTransform: "uppercase",
+    marginBottom: 10,
+    paddingLeft: 4,
+  },
+  item: {
     borderWidth: 1,
-    paddingHorizontal: 18,
-    paddingVertical: 18,
+    borderRadius: 14,
+    paddingVertical: 15,
+    paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
-    marginBottom: 14,
+    gap: 14,
+    marginBottom: 8,
   },
-  iconBox: {
-    width: 58,
-    height: 58,
-    borderRadius: 18,
+  itemIcon: {
+    width: 34,
+    height: 34,
+    borderWidth: 1,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
+    flexShrink: 0,
   },
-  rowLabel: {
+  itemLabel: {
     flex: 1,
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  pill: {
-    minHeight: 38,
-    borderRadius: 999,
-    paddingHorizontal: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  rowValue: {
+    fontFamily: "DMSans_400Regular",
     fontSize: 14,
-    fontWeight: "700",
+  },
+  itemValue: {
+    fontFamily: "DMSans_400Regular",
+    fontSize: 12,
+  },
+  badge: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  badgeText: {
+    fontFamily: "DMSans_500Medium",
+    fontSize: 10,
+    letterSpacing: 1,
   },
   footer: {
     marginTop: 24,
     textAlign: "center",
-    fontSize: 14,
-    fontWeight: "600",
+    fontFamily: "DMSans_400Regular",
+    fontSize: 11,
+    letterSpacing: 1,
   },
 });

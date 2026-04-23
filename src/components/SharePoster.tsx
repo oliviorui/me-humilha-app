@@ -5,7 +5,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useAppTheme } from "../theme/ThemeProvider";
 
 type PosterVariant = "square" | "story";
@@ -21,7 +20,7 @@ export default function SharePoster({
   quote,
   variant,
 }: SharePosterProps) {
-  const { palette, isDark } = useAppTheme();
+  const { palette } = useAppTheme();
   const isStory = variant === "story";
 
   return (
@@ -29,61 +28,76 @@ export default function SharePoster({
       style={[
         styles.poster,
         isStory ? styles.posterStory : styles.posterSquare,
-        { backgroundColor: palette.backgroundSecondary },
+        {
+          backgroundColor: palette.surface,
+          borderColor: palette.border,
+        },
       ]}
     >
       <ImageBackground
         source={image}
         resizeMode="cover"
-        style={styles.background}
-        imageStyle={styles.backgroundImage}
+        imageStyle={styles.bgImage}
+        style={styles.posterInner}
       >
         <View
           style={[
-            styles.overlay,
+            styles.bgOverlay,
+            { backgroundColor: palette.overlay },
+          ]}
+        />
+
+        <View
+          style={[
+            styles.cornerTop,
             {
-              backgroundColor: isDark
-                ? "rgba(11, 6, 20, 0.62)"
-                : "rgba(243, 237, 249, 0.62)",
+              borderTopColor: palette.accent2,
+              borderLeftColor: palette.accent2,
             },
           ]}
         />
 
         <View
           style={[
-            styles.frame,
+            styles.cornerBottom,
             {
-              borderColor: palette.border,
-              backgroundColor: isDark
-                ? "rgba(18, 12, 30, 0.34)"
-                : "rgba(255,255,255,0.22)",
+              borderBottomColor: palette.accent,
+              borderRightColor: palette.accent,
             },
           ]}
-        >
-          <LinearGradient
-            colors={[palette.primary, palette.primaryStrong, palette.accent]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={styles.brandTag}
-          >
-            <Text style={styles.brandTagText}>ME HUMILHA</Text>
-          </LinearGradient>
+        />
 
-          <Text
+        <View
+          style={[
+            styles.eyebrow,
+            { borderColor: palette.border },
+          ]}
+        >
+          <View
             style={[
-              styles.quote,
-              isStory ? styles.quoteStory : null,
+              styles.eyebrowDot,
               {
-                color: palette.text,
-                textShadowColor: isDark
-                  ? "rgba(0,0,0,0.36)"
-                  : "rgba(255,255,255,0.16)",
+                backgroundColor: palette.accent2,
+                shadowColor: palette.accent2,
               },
             ]}
-          >
-            {quote}
+          />
+          <Text style={[styles.eyebrowText, { color: palette.textMuted }]}>
+            Desmotivação do dia
           </Text>
         </View>
+
+        <Text style={[styles.quoteMark, { color: palette.accent2 }]}>”</Text>
+
+        <Text
+          style={[
+            styles.phrase,
+            isStory ? styles.phraseStory : null,
+            { color: palette.text },
+          ]}
+        >
+          {quote}
+        </Text>
       </ImageBackground>
     </View>
   );
@@ -94,6 +108,7 @@ const styles = StyleSheet.create({
     width: "100%",
     overflow: "hidden",
     borderRadius: 24,
+    borderWidth: 1,
   },
   posterSquare: {
     aspectRatio: 1,
@@ -101,50 +116,86 @@ const styles = StyleSheet.create({
   posterStory: {
     aspectRatio: 9 / 16,
   },
-  background: {
+  posterInner: {
     flex: 1,
+    paddingTop: 36,
+    paddingRight: 26,
+    paddingBottom: 28,
+    paddingLeft: 26,
+    position: "relative",
+    overflow: "hidden",
   },
-  backgroundImage: {
-    opacity: 0.34,
+  bgImage: {
+    opacity: 0.08,
   },
-  overlay: {
+  bgOverlay: {
     ...StyleSheet.absoluteFillObject,
   },
-  frame: {
-    flex: 1,
-    margin: 12,
-    borderRadius: 28,
-    borderWidth: 1,
-    paddingHorizontal: 22,
-    paddingTop: 20,
-    paddingBottom: 22,
-    justifyContent: "space-between",
+  cornerTop: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: 56,
+    height: 56,
+    borderTopWidth: 1.5,
+    borderLeftWidth: 1.5,
+    borderTopLeftRadius: 24,
+    opacity: 0.6,
   },
-  brandTag: {
+  cornerBottom: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 56,
+    height: 56,
+    borderBottomWidth: 1.5,
+    borderRightWidth: 1.5,
+    borderBottomRightRadius: 24,
+    opacity: 0.4,
+  },
+  eyebrow: {
     alignSelf: "flex-start",
-    minHeight: 34,
+    minHeight: 28,
+    borderWidth: 1,
     borderRadius: 999,
-    paddingHorizontal: 14,
-    justifyContent: "center",
+    paddingHorizontal: 11,
+    paddingVertical: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+    marginBottom: 24,
   },
-  brandTagText: {
-    color: "#FFFFFF",
-    fontSize: 11,
-    fontWeight: "900",
-    letterSpacing: 1.4,
+  eyebrowDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 999,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 6,
   },
-  quote: {
+  eyebrowText: {
+    fontFamily: "DMSans_500Medium",
+    fontSize: 9.5,
+    letterSpacing: 2.5,
+    textTransform: "uppercase",
+  },
+  quoteMark: {
+    fontFamily: "PlayfairDisplay_400Regular_Italic",
+    fontSize: 64,
+    lineHeight: 36,
+    marginBottom: 14,
+    opacity: 0.75,
+  },
+  phrase: {
+    fontFamily: "BebasNeue_400Regular",
+    fontSize: 36,
+    lineHeight: 38,
+    letterSpacing: 0.5,
     flex: 1,
-    textAlign: "left",
-    textAlignVertical: "center",
-    fontSize: 34,
-    lineHeight: 42,
-    fontWeight: "900",
-    letterSpacing: -1.2,
-    marginTop: 18,
   },
-  quoteStory: {
-    fontSize: 38,
-    lineHeight: 46,
+  phraseStory: {
+    fontSize: 42,
+    lineHeight: 44,
   },
 });
+ 

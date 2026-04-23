@@ -1,63 +1,44 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import ScreenBackground from "../components/ScreenBackground";
 import { useAppTheme } from "../theme/ThemeProvider";
+import { useAppFonts } from "../hooks/useAppFonts";
 
 export default function LaunchScreen() {
-  const { palette, isDark } = useAppTheme();
+  const { palette } = useAppTheme();
+  const { fontsLoaded } = useAppFonts();
+
+  if (!fontsLoaded) {
+    return <ScreenBackground />;
+  }
 
   return (
-    <View style={[styles.screen, { backgroundColor: palette.background }]}>
-      <View
-        style={[
-          styles.glowTop,
-          {
-            backgroundColor: palette.primary,
-            opacity: isDark ? 0.14 : 0.10,
-          },
-        ]}
-      />
+    <ScreenBackground>
+      <View style={styles.screen}>
+        <View style={styles.logoArea}>
+          <View
+            style={[
+              styles.logoMark,
+              {
+                shadowColor: palette.accent2,
+              },
+            ]}
+          >
+            <Image
+              source={require("../../assets/images/icon.png")}
+              style={styles.logoImage}
+            />
+          </View>
 
-      <View
-        style={[
-          styles.glowBottom,
-          {
-            backgroundColor: palette.accent2,
-            opacity: isDark ? 0.14 : 0.10,
-          },
-        ]}
-      />
+          <Text style={[styles.logoText, { color: palette.text }]}>
+            ME HUMILHA
+          </Text>
+        </View>
 
-      <View
-        style={[
-          styles.card,
-          {
-            backgroundColor: palette.surface,
-            borderColor: palette.border,
-            shadowColor: palette.shadow,
-          },
-        ]}
-      >
-        <LinearGradient
-          colors={[palette.primary, palette.primaryStrong, palette.accent2]}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={styles.logoWrap}
-        >
-          <Image
-            source={require("../../assets/images/icon.png")}
-            style={styles.logo}
-          />
-        </LinearGradient>
-
-        <Text style={[styles.brand, { color: palette.text }]}>
-          ME HUMILHA
-        </Text>
-
-        <Text style={[styles.tagline, { color: palette.textMuted }]}>
+        <Text style={[styles.subtitle, { color: palette.textMuted }]}>
           carregando sua próxima decepção...
         </Text>
       </View>
-    </View>
+    </ScreenBackground>
   );
 }
 
@@ -68,58 +49,38 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 24,
   },
-  glowTop: {
-    position: "absolute",
-    top: -40,
-    left: -40,
-    width: 220,
-    height: 220,
-    borderRadius: 999,
-  },
-  glowBottom: {
-    position: "absolute",
-    bottom: -50,
-    right: -50,
-    width: 240,
-    height: 240,
-    borderRadius: 999,
-  },
-  card: {
-    width: "100%",
-    borderRadius: 30,
-    paddingVertical: 34,
-    paddingHorizontal: 24,
-    borderWidth: 1,
+  logoArea: {
+    flexDirection: "row",
     alignItems: "center",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.14,
-    shadowRadius: 24,
-    elevation: 4,
+    gap: 10,
+    marginBottom: 12,
   },
-  logoWrap: {
-    width: 94,
-    height: 94,
-    borderRadius: 26,
+  logoMark: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: "#c054e0",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.45,
+    shadowRadius: 18,
+    elevation: 6,
   },
-  logo: {
-    width: 58,
-    height: 58,
-    borderRadius: 18,
+  logoImage: {
+    width: 24,
+    height: 24,
+    borderRadius: 7,
   },
-  brand: {
-    fontSize: 34,
-    lineHeight: 38,
-    fontWeight: "900",
-    letterSpacing: 1.4,
-    marginBottom: 10,
+  logoText: {
+    fontFamily: "BebasNeue_400Regular",
+    fontSize: 28,
+    letterSpacing: 3,
+    lineHeight: 28,
   },
-  tagline: {
-    fontSize: 15,
-    lineHeight: 21,
-    fontWeight: "700",
+  subtitle: {
+    fontFamily: "DMSans_500Medium",
+    fontSize: 14,
     textAlign: "center",
   },
 });

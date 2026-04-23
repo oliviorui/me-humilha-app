@@ -2,11 +2,14 @@ import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 
+import ScreenBackground from "../components/ScreenBackground";
 import { setOnboardingSeen } from "../utils/appState";
 import { useAppTheme } from "../theme/ThemeProvider";
+import { useAppFonts } from "../hooks/useAppFonts";
 
 export default function OnboardingScreen() {
-  const { palette, isDark } = useAppTheme();
+  const { palette } = useAppTheme();
+  const { fontsLoaded } = useAppFonts();
 
   async function handleContinue() {
     try {
@@ -17,206 +20,184 @@ export default function OnboardingScreen() {
     }
   }
 
+  if (!fontsLoaded) {
+    return <ScreenBackground />;
+  }
+
   return (
-    <View style={[styles.screen, { backgroundColor: palette.background }]}>
-      <View
-        style={[
-          styles.glowTop,
-          {
-            backgroundColor: palette.primary,
-            opacity: isDark ? 0.14 : 0.10,
-          },
-        ]}
-      />
-
-      <View
-        style={[
-          styles.glowBottom,
-          {
-            backgroundColor: palette.accent2,
-            opacity: isDark ? 0.14 : 0.10,
-          },
-        ]}
-      />
-
-      <View
-        style={[
-          styles.card,
-          {
-            backgroundColor: palette.surface,
-            borderColor: palette.border,
-            shadowColor: palette.shadow,
-          },
-        ]}
-      >
-        <View style={styles.topRow}>
-          <LinearGradient
-            colors={[palette.primary, palette.primaryStrong, palette.accent2]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={styles.brandChip}
-          >
-            <Image
-              source={require("../../assets/images/icon.png")}
-              style={styles.logo}
-            />
-            <Text style={styles.brandChipText}>ME HUMILHA</Text>
-          </LinearGradient>
-        </View>
-
-        <Text style={[styles.title, { color: palette.text }]}>
-          Bem-vindo.
-        </Text>
-
-        <Text style={[styles.description, { color: palette.text }]}>
-          Aqui ninguém acredita no teu potencial.
-        </Text>
-
-        <Text style={[styles.descriptionSecondary, { color: palette.textMuted }]}>
-          Gera lapadas absurdas, guarda as piores e partilha posters da tua decadência com estilo.
-        </Text>
-
+    <ScreenBackground>
+      <View style={styles.screen}>
         <View
           style={[
-            styles.highlightBox,
+            styles.card,
             {
-              backgroundColor: palette.surfaceSoft,
+              backgroundColor: palette.surface,
               borderColor: palette.border,
+              shadowColor: palette.shadow,
             },
           ]}
         >
-          <Text style={[styles.highlightText, { color: palette.primaryStrong }]}>
-            O app que te motiva no ódio.
-          </Text>
-        </View>
+          <View style={styles.brandRow}>
+            <View
+              style={[
+                styles.logoMark,
+                {
+                  shadowColor: palette.accent2,
+                },
+              ]}
+            >
+              <Image
+                source={require("../../assets/images/icon.png")}
+                style={styles.logoImage}
+              />
+            </View>
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.buttonWrap,
-            { opacity: pressed ? 0.88 : 1 },
-          ]}
-          onPress={handleContinue}
-        >
-          <LinearGradient
-            colors={[palette.primary, palette.primaryStrong, palette.accent2]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={styles.button}
-          >
-            <Text style={[styles.buttonText, { color: palette.primaryText }]}>
-              Pode começar a humilhação
+            <Text style={[styles.brandText, { color: palette.text }]}>
+              ME HUMILHA
             </Text>
-          </LinearGradient>
-        </Pressable>
+          </View>
+
+          <Text style={[styles.title, { color: palette.text }]}>
+            Bem-vindo.
+          </Text>
+
+          <Text style={[styles.description, { color: palette.text }]}>
+            Aqui ninguém acredita no teu potencial.
+          </Text>
+
+          <Text style={[styles.secondary, { color: palette.textMuted }]}>
+            Gera lapadas absurdas, guarda as piores e partilha a tua decadência com estilo.
+          </Text>
+
+          <View
+            style={[
+              styles.highlight,
+              {
+                backgroundColor: palette.surface2,
+                borderColor: palette.border,
+              },
+            ]}
+          >
+            <Text style={[styles.highlightText, { color: palette.accent2 }]}>
+              O app que te motiva no ódio.
+            </Text>
+          </View>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.buttonWrap,
+              {
+                opacity: pressed ? 0.92 : 1,
+                transform: [{ scale: pressed ? 0.985 : 1 }],
+              },
+            ]}
+            onPress={handleContinue}
+          >
+            <LinearGradient
+              colors={[palette.accent2, palette.accent3]}
+              start={{ x: 0, y: 0.2 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>PODE COMEÇAR A HUMILHAÇÃO</Text>
+            </LinearGradient>
+          </Pressable>
+        </View>
       </View>
-    </View>
+    </ScreenBackground>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
   },
-  glowTop: {
-    position: "absolute",
-    top: -50,
-    left: -40,
-    width: 220,
-    height: 220,
-    borderRadius: 999,
-  },
-  glowBottom: {
-    position: "absolute",
-    bottom: -60,
-    right: -40,
-    width: 240,
-    height: 240,
-    borderRadius: 999,
-  },
   card: {
-    width: "100%",
-    borderRadius: 30,
-    paddingVertical: 28,
-    paddingHorizontal: 24,
     borderWidth: 1,
+    borderRadius: 24,
+    paddingVertical: 24,
+    paddingHorizontal: 22,
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.14,
     shadowRadius: 24,
     elevation: 4,
   },
-  topRow: {
-    marginBottom: 20,
-  },
-  brandChip: {
-    minHeight: 54,
-    alignSelf: "flex-start",
-    borderRadius: 18,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+  brandRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+    marginBottom: 18,
   },
-  logo: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    backgroundColor: "rgba(255,255,255,0.14)",
+  logoMark: {
+    width: 36,
+    height: 36,
+    borderRadius: 11,
+    backgroundColor: "#c054e0",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.45,
+    shadowRadius: 16,
+    elevation: 6,
   },
-  brandChipText: {
-    color: "#FFFFFF",
-    fontSize: 13,
-    fontWeight: "900",
-    letterSpacing: 1,
+  logoImage: {
+    width: 20,
+    height: 20,
+    borderRadius: 6,
+  },
+  brandText: {
+    fontFamily: "BebasNeue_400Regular",
+    fontSize: 22,
+    letterSpacing: 2.5,
+    lineHeight: 22,
   },
   title: {
-    fontSize: 36,
-    lineHeight: 40,
-    fontWeight: "900",
-    letterSpacing: -1,
+    fontFamily: "BebasNeue_400Regular",
+    fontSize: 34,
+    lineHeight: 36,
+    letterSpacing: 1,
     marginBottom: 12,
   },
   description: {
-    fontSize: 24,
-    lineHeight: 32,
-    fontWeight: "900",
+    fontFamily: "DMSans_700Bold",
+    fontSize: 22,
+    lineHeight: 30,
     marginBottom: 10,
   },
-  descriptionSecondary: {
+  secondary: {
+    fontFamily: "DMSans_400Regular",
     fontSize: 15,
     lineHeight: 22,
-    fontWeight: "600",
-    marginBottom: 24,
+    marginBottom: 22,
   },
-  highlightBox: {
-    borderRadius: 20,
+  highlight: {
     borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 15,
-    marginBottom: 24,
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 22,
   },
   highlightText: {
-    fontSize: 15,
-    lineHeight: 21,
-    fontWeight: "900",
+    fontFamily: "DMSans_700Bold",
+    fontSize: 14,
+    lineHeight: 20,
   },
   buttonWrap: {
     width: "100%",
   },
   button: {
-    minHeight: 62,
-    borderRadius: 20,
+    minHeight: 58,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 18,
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: "900",
-    letterSpacing: 0.3,
-    textAlign: "center",
+    fontFamily: "BebasNeue_400Regular",
+    color: "#FFFFFF",
+    fontSize: 21,
+    letterSpacing: 2.5,
   },
 });

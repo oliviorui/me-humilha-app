@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import {
   Alert,
   FlatList,
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -11,20 +12,19 @@ import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
 
 import AppHeader from "../../src/components/AppHeader";
-import ProgressBar from "../../src/components/ProgressBar";
+import ScreenBackground from "../../src/components/ScreenBackground";
 import { useAppTheme } from "../../src/theme/ThemeProvider";
-import { getYearProgress } from "../../src/utils/getYearProgress";
 import {
   getFavorites,
   removeFavorite,
   type FavoriteItem,
 } from "../../src/utils/favorites";
+import { useAppFonts } from "../../src/hooks/useAppFonts";
 
 export default function FavoritesTab() {
   const { palette } = useAppTheme();
+  const { fontsLoaded } = useAppFonts();
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
-
-  const yearProgress = getYearProgress();
 
   const loadFavorites = useCallback(async () => {
     const data = await getFavorites();
@@ -50,31 +50,36 @@ export default function FavoritesTab() {
     return (
       <View
         style={[
-          styles.itemCard,
+          styles.savedItem,
           {
             backgroundColor: palette.surface,
             borderColor: palette.border,
           },
         ]}
       >
-        <View
-          style={[
-            styles.itemDot,
-            { backgroundColor: palette.primary },
-          ]}
-        />
+        <Image source={item.image} style={styles.thumb} resizeMode="cover" />
 
-        <Text style={[styles.itemText, { color: palette.text }]}>
-          {item.quote}
-        </Text>
+        <View style={styles.textBlock}>
+          <Text
+            style={[styles.savedText, { color: palette.text }]}
+            numberOfLines={3}
+          >
+            {item.quote}
+          </Text>
+        </View>
 
         <Pressable
-          style={styles.trashButton}
+          style={({ pressed }) => [
+            styles.savedDelete,
+            {
+              opacity: pressed ? 0.72 : 1,
+            },
+          ]}
           onPress={() => handleRemove(item.id)}
         >
           <Ionicons
             name="trash-outline"
-            size={20}
+            size={16}
             color={palette.textMuted}
           />
         </Pressable>
@@ -82,106 +87,128 @@ export default function FavoritesTab() {
     );
   }
 
+  if (!fontsLoaded) {
+    return <ScreenBackground />;
+  }
+
   return (
-    <View style={[styles.screen, { backgroundColor: palette.background }]}>
-      <AppHeader />
+    <ScreenBackground>
+      <View style={styles.screen}>
+        <AppHeader />
 
-      <ProgressBar
-        progress={yearProgress.progress}
-        percentage={yearProgress.percentage}
-        year={yearProgress.year}
-      />
+        <Text style={[styles.screenTitle, { color: palette.text }]}>
+          GUARDADAS
+        </Text>
 
-      <Text style={[styles.title, { color: palette.text }]}>GUARDADAS</Text>
+        <FlatList
+          data={favorites}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.savedList}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <View
+                style={[
+                  styles.emptyIcon,
+                  {
+                    backgroundColor: palette.surface,
+                    borderColor: palette.border,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name="bookmark-outline"
+                  size={22}
+                  color={palette.textMuted}
+                />
+              </View>
 
-      <FlatList
-        data={favorites}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          <View
-            style={[
-              styles.emptyState,
-              {
-                backgroundColor: palette.surface,
-                borderColor: palette.border,
-              },
-            ]}
-          >
-            <Text style={[styles.emptyTitle, { color: palette.text }]}>
-              Nada guardado ainda.
-            </Text>
-            <Text style={[styles.emptyText, { color: palette.textMuted }]}>
-              Guarda algumas lapadas e elas aparecem aqui.
-            </Text>
-          </View>
-        }
-      />
-    </View>
+              <Text style={[styles.emptyTitle, { color: palette.text }]}>
+                Nada guardado ainda
+              </Text>
+
+              <Text style={[styles.emptySub, { color: palette.textMuted }]}>
+                As humilhações ficam aqui.
+              </Text>
+            </View>
+          }
+        />
+      </View>
+    </ScreenBackground>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    paddingTop: 18,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingBottom: 16,
   },
-  title: {
-    fontSize: 26,
-    fontWeight: "900",
-    letterSpacing: 1,
+  screenTitle: {
+    fontFamily: "BebasNeue_400Regular",
+    fontSize: 30,
+    letterSpacing: 2,
     marginBottom: 16,
   },
-  listContent: {
-    gap: 14,
-    paddingBottom: 20,
+  savedList: {
+    gap: 10,
+    paddingBottom: 100,
   },
-  itemCard: {
-    minHeight: 96,
-    borderRadius: 24,
+  savedItem: {
     borderWidth: 1,
-    paddingHorizontal: 18,
-    paddingVertical: 18,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
     flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 14,
+    alignItems: "center",
+    gap: 12,
   },
-  itemDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 999,
-    marginTop: 8,
+  thumb: {
+    width: 54,
+    height: 54,
+    borderRadius: 12,
+    flexShrink: 0,
   },
-  itemText: {
+  textBlock: {
     flex: 1,
-    fontSize: 24,
-    lineHeight: 32,
-    fontWeight: "900",
-    letterSpacing: -0.6,
   },
-  trashButton: {
-    paddingTop: 4,
-    paddingLeft: 4,
+  savedText: {
+    fontFamily: "BebasNeue_400Regular",
+    fontSize: 20,
+    lineHeight: 22,
+  },
+  savedDelete: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
   },
   emptyState: {
-    borderRadius: 24,
-    borderWidth: 1,
-    paddingVertical: 26,
-    paddingHorizontal: 20,
+    flex: 1,
     alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 48,
+  },
+  emptyIcon: {
+    width: 52,
+    height: 52,
+    borderWidth: 1,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: "900",
-    marginBottom: 8,
+    fontFamily: "DMSans_500Medium",
+    fontSize: 15,
   },
-  emptyText: {
-    fontSize: 14,
-    textAlign: "center",
-    lineHeight: 20,
+  emptySub: {
+    fontFamily: "DMSans_400Regular",
+    fontSize: 13,
+    opacity: 0.6,
   },
 });
