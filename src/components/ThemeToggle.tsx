@@ -10,9 +10,9 @@ export default function ThemeToggle() {
       style={({ pressed }) => [
         styles.button,
         {
-          backgroundColor: palette.surface,
+          backgroundColor: palette.surfaceSoft,
           borderColor: palette.border,
-          opacity: pressed ? 0.82 : 1,
+          opacity: pressed ? 0.84 : 1,
         },
       ]}
       onPress={() => {
@@ -21,8 +21,8 @@ export default function ThemeToggle() {
     >
       <Ionicons
         name={isDark ? "sunny-outline" : "moon-outline"}
-        size={20}
-        color={palette.text}
+        size={22}
+        color={palette.textSoft}
       />
     </Pressable>
   );
@@ -30,9 +30,9 @@ export default function ThemeToggle() {
 
 const styles = StyleSheet.create({
   button: {
-    width: 46,
-    height: 46,
-    borderRadius: 999,
+    width: 54,
+    height: 54,
+    borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,

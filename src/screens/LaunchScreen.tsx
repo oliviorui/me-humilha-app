@@ -1,21 +1,29 @@
 import { Image, StyleSheet, Text, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useAppTheme } from "../theme/ThemeProvider";
 
 export default function LaunchScreen() {
-  const { palette } = useAppTheme();
+  const { palette, isDark } = useAppTheme();
 
   return (
     <View style={[styles.screen, { backgroundColor: palette.background }]}>
       <View
         style={[
           styles.glowTop,
-          { backgroundColor: palette.accent, opacity: 0.12 },
+          {
+            backgroundColor: palette.primary,
+            opacity: isDark ? 0.14 : 0.10,
+          },
         ]}
       />
+
       <View
         style={[
           styles.glowBottom,
-          { backgroundColor: palette.primary, opacity: 0.12 },
+          {
+            backgroundColor: palette.accent2,
+            opacity: isDark ? 0.14 : 0.10,
+          },
         ]}
       />
 
@@ -29,20 +37,20 @@ export default function LaunchScreen() {
           },
         ]}
       >
-        <View
-          style={[
-            styles.logoWrap,
-            { backgroundColor: palette.surfaceStrong },
-          ]}
+        <LinearGradient
+          colors={[palette.primary, palette.primaryStrong, palette.accent2]}
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}
+          style={styles.logoWrap}
         >
           <Image
             source={require("../../assets/images/icon.png")}
             style={styles.logo}
           />
-        </View>
+        </LinearGradient>
 
         <Text style={[styles.brand, { color: palette.text }]}>
-          Me Humilha
+          ME HUMILHA
         </Text>
 
         <Text style={[styles.tagline, { color: palette.textMuted }]}>
@@ -78,11 +86,10 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "100%",
-    borderRadius: 28,
-    paddingVertical: 30,
+    borderRadius: 30,
+    paddingVertical: 34,
     paddingHorizontal: 24,
     borderWidth: 1,
-    overflow: "hidden",
     alignItems: "center",
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.14,
@@ -90,12 +97,12 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   logoWrap: {
-    width: 82,
-    height: 82,
-    borderRadius: 24,
+    width: 94,
+    height: 94,
+    borderRadius: 26,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 18,
+    marginBottom: 20,
   },
   logo: {
     width: 58,
@@ -106,7 +113,7 @@ const styles = StyleSheet.create({
     fontSize: 34,
     lineHeight: 38,
     fontWeight: "900",
-    letterSpacing: -1,
+    letterSpacing: 1.4,
     marginBottom: 10,
   },
   tagline: {

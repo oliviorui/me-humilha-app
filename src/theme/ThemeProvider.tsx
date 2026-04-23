@@ -27,21 +27,21 @@ type ThemeProviderProps = {
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [mode, setMode] = useState<AppThemeMode>("dark");
-  const [isReady, setIsReady] = useState<boolean>(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
 
     async function loadTheme() {
       try {
-        const storedTheme = await AsyncStorage.getItem(STORAGE_KEY);
+        const storedValue = await AsyncStorage.getItem(STORAGE_KEY);
 
         if (!isMounted) {
           return;
         }
 
-        if (storedTheme === "light" || storedTheme === "dark") {
-          setMode(storedTheme);
+        if (storedValue === "light" || storedValue === "dark") {
+          setMode(storedValue);
         }
       } finally {
         if (isMounted) {

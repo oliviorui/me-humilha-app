@@ -1,16 +1,17 @@
 import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { setOnboardingSeen } from "../utils/appState";
 import { useAppTheme } from "../theme/ThemeProvider";
 
 export default function OnboardingScreen() {
-  const { palette } = useAppTheme();
+  const { palette, isDark } = useAppTheme();
 
   async function handleContinue() {
     try {
       await setOnboardingSeen();
-      router.replace("/home");
+      router.replace("/(tabs)");
     } catch {
       Alert.alert("Erro", "Não foi possível continuar agora.");
     }
@@ -21,13 +22,20 @@ export default function OnboardingScreen() {
       <View
         style={[
           styles.glowTop,
-          { backgroundColor: palette.accent, opacity: 0.12 },
+          {
+            backgroundColor: palette.primary,
+            opacity: isDark ? 0.14 : 0.10,
+          },
         ]}
       />
+
       <View
         style={[
           styles.glowBottom,
-          { backgroundColor: palette.primary, opacity: 0.12 },
+          {
+            backgroundColor: palette.accent2,
+            opacity: isDark ? 0.14 : 0.10,
+          },
         ]}
       />
 
@@ -42,64 +50,63 @@ export default function OnboardingScreen() {
         ]}
       >
         <View style={styles.topRow}>
-          <View
-            style={[
-              styles.brandChip,
-              {
-                backgroundColor: palette.surfaceStrong,
-                borderColor: palette.border,
-              },
-            ]}
+          <LinearGradient
+            colors={[palette.primary, palette.primaryStrong, palette.accent2]}
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
+            style={styles.brandChip}
           >
             <Image
               source={require("../../assets/images/icon.png")}
               style={styles.logo}
             />
-            <Text style={[styles.brandChipText, { color: palette.text }]}>
-              Me Humilha
-            </Text>
-          </View>
+            <Text style={styles.brandChipText}>ME HUMILHA</Text>
+          </LinearGradient>
         </View>
 
-        <Text style={[styles.title, { color: palette.text }]}>Bem-vindo.</Text>
+        <Text style={[styles.title, { color: palette.text }]}>
+          Bem-vindo.
+        </Text>
 
         <Text style={[styles.description, { color: palette.text }]}>
           Aqui ninguém acredita no teu potencial.
         </Text>
 
-        <Text
-          style={[styles.descriptionSecondary, { color: palette.textMuted }]}
-        >
-          Gera lapadas, guarda as piores e exporta posters da tua decadência com estilo.
+        <Text style={[styles.descriptionSecondary, { color: palette.textMuted }]}>
+          Gera lapadas absurdas, guarda as piores e partilha posters da tua decadência com estilo.
         </Text>
 
         <View
           style={[
             styles.highlightBox,
             {
-              backgroundColor: palette.surfaceStrong,
+              backgroundColor: palette.surfaceSoft,
               borderColor: palette.border,
             },
           ]}
         >
-          <Text style={[styles.highlightText, { color: palette.textSoft }]}>
+          <Text style={[styles.highlightText, { color: palette.primaryStrong }]}>
             O app que te motiva no ódio.
           </Text>
         </View>
 
         <Pressable
           style={({ pressed }) => [
-            styles.button,
-            {
-              backgroundColor: palette.primary,
-              opacity: pressed ? 0.85 : 1,
-            },
+            styles.buttonWrap,
+            { opacity: pressed ? 0.88 : 1 },
           ]}
           onPress={handleContinue}
         >
-          <Text style={[styles.buttonText, { color: palette.primaryText }]}>
-            Pode começar a humilhação
-          </Text>
+          <LinearGradient
+            colors={[palette.primary, palette.primaryStrong, palette.accent2]}
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
+            style={styles.button}
+          >
+            <Text style={[styles.buttonText, { color: palette.primaryText }]}>
+              Pode começar a humilhação
+            </Text>
+          </LinearGradient>
         </Pressable>
       </View>
     </View>
@@ -131,7 +138,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "100%",
-    borderRadius: 28,
+    borderRadius: 30,
     paddingVertical: 28,
     paddingHorizontal: 24,
     borderWidth: 1,
@@ -141,63 +148,67 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   topRow: {
-    marginBottom: 18,
+    marginBottom: 20,
   },
   brandChip: {
-    minHeight: 46,
+    minHeight: 54,
     alignSelf: "flex-start",
-    borderRadius: 999,
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    borderRadius: 18,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
   },
   logo: {
     width: 28,
     height: 28,
     borderRadius: 8,
+    backgroundColor: "rgba(255,255,255,0.14)",
   },
   brandChipText: {
+    color: "#FFFFFF",
     fontSize: 13,
     fontWeight: "900",
-    letterSpacing: 0.2,
+    letterSpacing: 1,
   },
   title: {
-    fontSize: 34,
-    lineHeight: 38,
+    fontSize: 36,
+    lineHeight: 40,
     fontWeight: "900",
     letterSpacing: -1,
     marginBottom: 12,
   },
   description: {
-    fontSize: 22,
-    lineHeight: 30,
-    fontWeight: "800",
+    fontSize: 24,
+    lineHeight: 32,
+    fontWeight: "900",
     marginBottom: 10,
   },
   descriptionSecondary: {
     fontSize: 15,
     lineHeight: 22,
     fontWeight: "600",
-    marginBottom: 22,
+    marginBottom: 24,
   },
   highlightBox: {
-    borderRadius: 18,
+    borderRadius: 20,
     borderWidth: 1,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 15,
     marginBottom: 24,
   },
   highlightText: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: "800",
+    fontSize: 15,
+    lineHeight: 21,
+    fontWeight: "900",
+  },
+  buttonWrap: {
+    width: "100%",
   },
   button: {
-    minHeight: 58,
-    borderRadius: 18,
+    minHeight: 62,
+    borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 18,
@@ -205,7 +216,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: "900",
-    letterSpacing: -0.3,
+    letterSpacing: 0.3,
     textAlign: "center",
   },
 });

@@ -2,64 +2,64 @@ export type AppThemeMode = "dark" | "light";
 
 export type AppPalette = {
   background: string;
-  backgroundAlt: string;
+  backgroundSecondary: string;
   surface: string;
-  surfaceStrong: string;
-  surfaceMuted: string;
+  surfaceSoft: string;
+  card: string;
   border: string;
   text: string;
   textSoft: string;
   textMuted: string;
   primary: string;
+  primaryStrong: string;
   primaryText: string;
   accent: string;
-  accentSoft: string;
-  overlay: string;
-  danger: string;
+  accent2: string;
   success: string;
-  white: string;
+  danger: string;
   shadow: string;
+  overlay: string;
 };
 
 export const palettes: Record<AppThemeMode, AppPalette> = {
   dark: {
-    background: "#0A0911",
-    backgroundAlt: "#120D1F",
-    surface: "#181225",
-    surfaceStrong: "#221936",
-    surfaceMuted: "#2A1F40",
-    border: "rgba(255,255,255,0.10)",
-    text: "#FFFFFF",
-    textSoft: "rgba(255,255,255,0.82)",
-    textMuted: "rgba(255,255,255,0.60)",
-    primary: "#F7C718",
-    primaryText: "#17120B",
-    accent: "#D94EF3",
-    accentSoft: "#7B2CBF",
-    overlay: "rgba(8,6,14,0.72)",
-    danger: "#FF5F6D",
-    success: "#3DDC97",
-    white: "#FFFFFF",
-    shadow: "rgba(0,0,0,0.35)",
+    background: "#09070F",
+    backgroundSecondary: "#120A1F",
+    surface: "rgba(20, 14, 34, 0.92)",
+    surfaceSoft: "rgba(24, 17, 40, 0.82)",
+    card: "rgba(16, 10, 28, 0.92)",
+    border: "rgba(199, 153, 255, 0.18)",
+    text: "#F6F1FF",
+    textSoft: "rgba(246, 241, 255, 0.84)",
+    textMuted: "rgba(246, 241, 255, 0.58)",
+    primary: "#C857FF",
+    primaryStrong: "#A833FF",
+    primaryText: "#FFFFFF",
+    accent: "#F6C945",
+    accent2: "#8D37FF",
+    success: "#44D39A",
+    danger: "#FF6B7D",
+    shadow: "rgba(0, 0, 0, 0.36)",
+    overlay: "rgba(7, 5, 14, 0.76)",
   },
   light: {
-    background: "#FFF8EC",
-    backgroundAlt: "#F6ECFF",
-    surface: "#FFFFFF",
-    surfaceStrong: "#FFF2BF",
-    surfaceMuted: "#F7E7FF",
-    border: "rgba(25,20,35,0.10)",
-    text: "#181225",
-    textSoft: "rgba(24,18,37,0.82)",
-    textMuted: "rgba(24,18,37,0.58)",
-    primary: "#F7C718",
-    primaryText: "#17120B",
-    accent: "#C13BE3",
-    accentSoft: "#8A38D2",
-    overlay: "rgba(255,248,236,0.76)",
-    danger: "#D64550",
-    success: "#1FA971",
-    white: "#FFFFFF",
-    shadow: "rgba(48,26,70,0.12)",
+    background: "#F3EDF9",
+    backgroundSecondary: "#EDE3F9",
+    surface: "rgba(241, 232, 251, 0.96)",
+    surfaceSoft: "rgba(236, 226, 248, 0.96)",
+    card: "rgba(239, 231, 249, 0.98)",
+    border: "rgba(138, 91, 184, 0.20)",
+    text: "#21143C",
+    textSoft: "rgba(33, 20, 60, 0.82)",
+    textMuted: "rgba(33, 20, 60, 0.56)",
+    primary: "#B145E9",
+    primaryStrong: "#932CDA",
+    primaryText: "#FFFFFF",
+    accent: "#F2C84B",
+    accent2: "#8F42E4",
+    success: "#28B37A",
+    danger: "#D94C65",
+    shadow: "rgba(70, 32, 110, 0.10)",
+    overlay: "rgba(243, 237, 249, 0.68)",
   },
 };

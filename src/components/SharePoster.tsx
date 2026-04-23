@@ -5,6 +5,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useAppTheme } from "../theme/ThemeProvider";
 
 type PosterVariant = "square" | "story";
@@ -28,7 +29,7 @@ export default function SharePoster({
       style={[
         styles.poster,
         isStory ? styles.posterStory : styles.posterSquare,
-        { backgroundColor: palette.backgroundAlt },
+        { backgroundColor: palette.backgroundSecondary },
       ]}
     >
       <ImageBackground
@@ -42,58 +43,41 @@ export default function SharePoster({
             styles.overlay,
             {
               backgroundColor: isDark
-                ? "rgba(20,12,32,0.22)"
-                : "rgba(255,248,236,0.12)",
+                ? "rgba(11, 6, 20, 0.62)"
+                : "rgba(243, 237, 249, 0.62)",
             },
           ]}
         />
 
         <View
           style={[
-            styles.outerBorder,
+            styles.frame,
             {
-              borderColor: isDark
-                ? "rgba(255,255,255,0.86)"
-                : "rgba(24,18,37,0.82)",
+              borderColor: palette.border,
+              backgroundColor: isDark
+                ? "rgba(18, 12, 30, 0.34)"
+                : "rgba(255,255,255,0.22)",
             },
           ]}
-        />
-
-        <View style={styles.logoBadgeWrap}>
-          <View
-            style={[
-              styles.logoBadge,
-              {
-                backgroundColor: isDark
-                  ? "rgba(20,12,32,0.88)"
-                  : "rgba(255,255,255,0.86)",
-                borderColor: isDark
-                  ? "rgba(255,255,255,0.10)"
-                  : "rgba(24,18,37,0.10)",
-              },
-            ]}
+        >
+          <LinearGradient
+            colors={[palette.primary, palette.primaryStrong, palette.accent]}
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
+            style={styles.brandTag}
           >
-            <Text
-              style={[
-                styles.logoBadgeText,
-                { color: isDark ? palette.text : palette.text },
-              ]}
-            >
-              Me Humilha
-            </Text>
-          </View>
-        </View>
+            <Text style={styles.brandTagText}>ME HUMILHA</Text>
+          </LinearGradient>
 
-        <View style={styles.content}>
           <Text
             style={[
               styles.quote,
               isStory ? styles.quoteStory : null,
               {
-                color: isDark ? "#FFFFFF" : "#171320",
+                color: palette.text,
                 textShadowColor: isDark
-                  ? "rgba(0,0,0,0.28)"
-                  : "rgba(255,255,255,0.24)",
+                  ? "rgba(0,0,0,0.36)"
+                  : "rgba(255,255,255,0.16)",
               },
             ]}
           >
@@ -109,7 +93,7 @@ const styles = StyleSheet.create({
   poster: {
     width: "100%",
     overflow: "hidden",
-    borderRadius: 14,
+    borderRadius: 24,
   },
   posterSquare: {
     aspectRatio: 1,
@@ -121,60 +105,46 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   backgroundImage: {
-    opacity: 1,
+    opacity: 0.34,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
   },
-  outerBorder: {
-    ...StyleSheet.absoluteFillObject,
-    top: 8,
-    right: 8,
-    bottom: 8,
-    left: 8,
-    borderWidth: 1.2,
-    borderRadius: 8,
+  frame: {
+    flex: 1,
+    margin: 12,
+    borderRadius: 28,
+    borderWidth: 1,
+    paddingHorizontal: 22,
+    paddingTop: 20,
+    paddingBottom: 22,
+    justifyContent: "space-between",
   },
-  logoBadgeWrap: {
-    position: "absolute",
-    top: 18,
-    left: 18,
-    zIndex: 3,
-  },
-  logoBadge: {
+  brandTag: {
+    alignSelf: "flex-start",
     minHeight: 34,
     borderRadius: 999,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
+    paddingHorizontal: 14,
     justifyContent: "center",
   },
-  logoBadgeText: {
-    fontSize: 12,
+  brandTagText: {
+    color: "#FFFFFF",
+    fontSize: 11,
     fontWeight: "900",
-    letterSpacing: 0.2,
-  },
-  content: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 28,
-    paddingVertical: 28,
+    letterSpacing: 1.4,
   },
   quote: {
-    textAlign: "center",
-    fontSize: 30,
-    lineHeight: 44,
-    fontWeight: "700",
-    fontFamily: "CormorantGaramond_700Bold",
-    textShadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    textShadowRadius: 4,
+    flex: 1,
+    textAlign: "left",
+    textAlignVertical: "center",
+    fontSize: 34,
+    lineHeight: 42,
+    fontWeight: "900",
+    letterSpacing: -1.2,
+    marginTop: 18,
   },
   quoteStory: {
-    fontSize: 34,
-    lineHeight: 48,
+    fontSize: 38,
+    lineHeight: 46,
   },
 });

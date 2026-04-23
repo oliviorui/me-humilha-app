@@ -1,11 +1,5 @@
-import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
 import { useAppTheme } from "../theme/ThemeProvider";
 
 type ProgressBarProps = {
@@ -20,156 +14,88 @@ export default function ProgressBar({
   year,
 }: ProgressBarProps) {
   const { palette } = useAppTheme();
-
-  const widthProgress = useSharedValue(0);
-  const opacity = useSharedValue(0);
-  const translateY = useSharedValue(10);
-
-  useEffect(() => {
-    widthProgress.value = withTiming(Math.max(progress, 0.02), {
-      duration: 650,
-      easing: Easing.out(Easing.cubic),
-    });
-
-    opacity.value = withTiming(1, {
-      duration: 320,
-      easing: Easing.out(Easing.cubic),
-    });
-
-    translateY.value = withTiming(0, {
-      duration: 320,
-      easing: Easing.out(Easing.cubic),
-    });
-  }, [progress, opacity, translateY, widthProgress]);
-
-  const wrapperAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-      transform: [{ translateY: translateY.value }],
-    };
-  });
-
-  const fillAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      width: `${widthProgress.value * 100}%`,
-    };
-  });
+  const progressWidth: `${number}%` = `${Math.max(progress * 100, 2)}%`;
 
   return (
-    <Animated.View style={[styles.wrapper, wrapperAnimatedStyle]}>
+    <View
+      style={[
+        styles.card,
+        {
+          backgroundColor: palette.surface,
+          borderColor: palette.border,
+          shadowColor: palette.shadow,
+        },
+      ]}
+    >
+      <View style={styles.row}>
+        <Text style={[styles.label, { color: palette.textMuted }]}>
+          FIM DE {year}
+        </Text>
+
+        <Text style={[styles.value, { color: palette.primaryStrong }]}>
+          {percentage.toFixed(2)}%
+        </Text>
+      </View>
+
       <View
         style={[
-          styles.card,
+          styles.track,
           {
-            backgroundColor: palette.surface,
-            borderColor: palette.border,
-            shadowColor: palette.shadow,
+            backgroundColor: palette.surfaceSoft,
           },
         ]}
       >
-        <View style={styles.header}>
-          <View>
-            <Text style={[styles.label, { color: palette.text }]}>
-              Fim de {year}
-            </Text>
-            <Text style={[styles.caption, { color: palette.textMuted }]}>
-              O ano segue acabando sem piedade.
-            </Text>
-          </View>
-
-          <Text style={[styles.value, { color: palette.accent }]}>
-            {percentage.toFixed(2)}%
-          </Text>
-        </View>
-
-        <View
+        <LinearGradient
+          colors={[palette.primary, palette.accent2, palette.accent]}
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}
           style={[
-            styles.track,
+            styles.fill,
             {
-              backgroundColor: palette.surfaceMuted,
+              width: progressWidth,
             },
           ]}
-        >
-          <Animated.View
-            style={[
-              styles.fill,
-              fillAnimatedStyle,
-              {
-                backgroundColor: palette.primary,
-              },
-            ]}
-          />
-          <View
-            style={[
-              styles.glow,
-              {
-                backgroundColor: palette.accent,
-              },
-            ]}
-          />
-        </View>
+        />
       </View>
-    </Animated.View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    width: "100%",
-    marginTop: 14,
-    marginBottom: 14,
-    borderRadius: 18,
-    overflow: "hidden",
-  },
   card: {
-    borderRadius: 18,
     borderWidth: 1,
-    paddingHorizontal: 16,
+    borderRadius: 24,
+    paddingHorizontal: 18,
     paddingVertical: 16,
+    marginBottom: 18,
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.16,
-    shadowRadius: 24,
-    elevation: 4,
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    elevation: 3,
   },
-  header: {
+  row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 12,
+    alignItems: "center",
     marginBottom: 12,
   },
   label: {
-    fontSize: 14,
-    fontWeight: "800",
-    letterSpacing: 0.3,
-  },
-  caption: {
     fontSize: 12,
-    fontWeight: "600",
-    marginTop: 4,
+    fontWeight: "800",
+    letterSpacing: 3,
   },
   value: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: "900",
-    letterSpacing: -0.6,
+    letterSpacing: -0.8,
   },
   track: {
-    width: "100%",
-    height: 14,
+    height: 6,
     borderRadius: 999,
     overflow: "hidden",
-    position: "relative",
   },
   fill: {
     height: "100%",
     borderRadius: 999,
-  },
-  glow: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    width: 72,
-    right: 0,
-    opacity: 0.16,
   },
 });

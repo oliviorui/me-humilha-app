@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { useAppTheme } from "../theme/ThemeProvider";
 
 type GenerateButtonProps = {
@@ -16,48 +17,47 @@ export default function GenerateButton({
   return (
     <Pressable
       style={({ pressed }) => [
-        styles.button,
-        {
-          backgroundColor: disabled ? palette.surfaceMuted : palette.primary,
-          opacity: pressed ? 0.85 : disabled ? 0.55 : 1,
-        },
+        styles.wrapper,
+        { opacity: pressed ? 0.88 : disabled ? 0.55 : 1 },
       ]}
       onPress={disabled ? undefined : onGenerate}
     >
-      <Ionicons
-        name={disabled ? "lock-closed-outline" : "sparkles-outline"}
-        size={20}
-        color={disabled ? palette.textMuted : palette.primaryText}
-      />
-
-      <Text
-        style={[
-          styles.text,
-          {
-            color: disabled ? palette.textMuted : palette.primaryText,
-          },
-        ]}
+      <LinearGradient
+        colors={[palette.primary, palette.primaryStrong, palette.accent2]}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        style={styles.button}
       >
-        {disabled ? "Modo travado" : "Gerar nova"}
-      </Text>
+        <Ionicons
+          name={disabled ? "lock-closed-outline" : "sparkles-outline"}
+          size={20}
+          color={palette.primaryText}
+        />
+
+        <Text style={[styles.text, { color: palette.primaryText }]}>
+          {disabled ? "Modo travado" : "NOVA HUMILHAÇÃO"}
+        </Text>
+      </LinearGradient>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  button: {
+  wrapper: {
     width: "100%",
-    minHeight: 60,
-    borderRadius: 20,
+  },
+  button: {
+    minHeight: 84,
+    borderRadius: 26,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 10,
-    paddingHorizontal: 20,
+    gap: 12,
+    paddingHorizontal: 22,
   },
   text: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "900",
-    letterSpacing: -0.3,
+    letterSpacing: 2,
   },
 });
