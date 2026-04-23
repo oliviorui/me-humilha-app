@@ -120,6 +120,26 @@ export default function HomeTab() {
           />
 
           <View style={styles.cardArea}>
+            <QuotePanel
+              quote={quoteState.item}
+              image={imageState.item}
+              onFavorite={handleFavorite}
+              onSave={handleSave}
+              onShare={handleShare}
+              isLiked={isLiked}
+              isAnimating={isAnimating}
+              showActions
+            />
+          </View>
+
+          <View style={styles.buttonWrap}>
+            <GenerateButton
+              onGenerate={handleGenerate}
+              disabled={isAnimating}
+            />
+          </View>
+
+          <View style={styles.hiddenCaptureArea}>
             <ViewShot
               ref={shareCardRef}
               options={{
@@ -132,20 +152,10 @@ export default function HomeTab() {
               <QuotePanel
                 quote={quoteState.item}
                 image={imageState.item}
-                onFavorite={handleFavorite}
-                onSave={handleSave}
-                onShare={handleShare}
-                isLiked={isLiked}
-                isAnimating={isAnimating}
+                showActions={false}
+                forExport
               />
             </ViewShot>
-          </View>
-
-          <View style={styles.buttonWrap}>
-            <GenerateButton
-              onGenerate={handleGenerate}
-              disabled={isAnimating}
-            />
           </View>
         </View>
       </SafeAreaView>
@@ -165,11 +175,18 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 4,
   },
-  capture: {
-    flex: 1,
-  },
   buttonWrap: {
     paddingTop: 8,
     paddingBottom: 82,
+  },
+  hiddenCaptureArea: {
+    position: "absolute",
+    left: -10000,
+    top: -10000,
+    opacity: 0,
+  },
+  capture: {
+    width: 1080,
+    height: 1080,
   },
 });

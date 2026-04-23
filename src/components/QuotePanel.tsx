@@ -11,11 +11,13 @@ import { useAppTheme } from "../theme/ThemeProvider";
 type QuotePanelProps = {
   quote: string;
   image: number;
-  onFavorite: () => void;
-  onSave: () => void;
-  onShare: () => void;
+  onFavorite?: () => void;
+  onSave?: () => void;
+  onShare?: () => void;
   isLiked?: boolean;
   isAnimating?: boolean;
+  showActions?: boolean;
+  forExport?: boolean;
 };
 
 type ActionButtonProps = {
@@ -70,26 +72,29 @@ export default function QuotePanel({
   onShare,
   isLiked = false,
   isAnimating = false,
+  showActions = true,
+  forExport = false,
 }: QuotePanelProps) {
   const { palette } = useAppTheme();
 
   return (
-    <View style={styles.wrap}>
+    <View style={[styles.wrap, forExport ? styles.wrapExport : null]}>
       <ImageBackground
         source={image}
         resizeMode="cover"
         imageStyle={styles.bgImage}
         style={[
           styles.card,
+          forExport ? styles.cardExport : null,
           {
             backgroundColor: palette.surface,
             borderColor: palette.border,
             shadowColor: palette.shadow,
             opacity: isAnimating ? 0 : 1,
-            transform: [
-              { translateY: isAnimating ? 14 : 0 },
-              { scale: isAnimating ? 0.96 : 1 },
-            ],
+            transform:
+              forExport || !isAnimating
+                ? undefined
+                : [{ translateY: 14 }, { scale: 0.96 }],
           },
         ]}
       >
@@ -158,24 +163,28 @@ export default function QuotePanel({
               ]}
             />
 
-            <View style={styles.actions}>
-              <ActionButton
-                icon="heart-outline"
-                label="Favorito"
-                onPress={onFavorite}
-                isLiked={isLiked}
-              />
-              <ActionButton
-                icon="bookmark-outline"
-                label="Guardar"
-                onPress={onSave}
-              />
-              <ActionButton
-                icon="share-social-outline"
-                label="Partilhar"
-                onPress={onShare}
-              />
-            </View>
+            {showActions ? (
+              <View style={styles.actions}>
+                <ActionButton
+                  icon="heart-outline"
+                  label="Favorito"
+                  onPress={onFavorite ?? (() => undefined)}
+                  isLiked={isLiked}
+                />
+                <ActionButton
+                  icon="bookmark-outline"
+                  label="Guardar"
+                  onPress={onSave ?? (() => undefined)}
+                />
+                <ActionButton
+                  icon="share-social-outline"
+                  label="Partilhar"
+                  onPress={onShare ?? (() => undefined)}
+                />
+              </View>
+            ) : (
+              <View style={styles.actionsPlaceholder} />
+            )}
           </View>
         </View>
       </ImageBackground>
@@ -190,6 +199,11 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     justifyContent: "center",
   },
+  wrapExport: {
+    flex: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
   card: {
     width: "100%",
     minHeight: 520,
@@ -202,19 +216,22 @@ const styles = StyleSheet.create({
     shadowRadius: 48,
     elevation: 4,
   },
+  cardExport: {
+    minHeight: 1080,
+  },
   bgImage: {
-    opacity: 0.40,
+    opacity: 0.4,
   },
   imageTone: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(13,10,18,0.24)",
+    backgroundColor: "rgba(8, 6, 14, 0.38)",
   },
   imageBottomShade: {
     position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
-    height: "33%",
+    height: "16%",
     backgroundColor: "rgba(13,10,18,0.42)",
   },
   cornerTop: {
@@ -262,7 +279,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    marginBottom: 26,
   },
   eyebrowDot: {
     width: 8,
@@ -288,14 +304,14 @@ const styles = StyleSheet.create({
   phraseWrap: {
     flex: 1,
     justifyContent: "center",
-    paddingBottom: 22,
+    paddingBottom: 10,
   },
   phrase: {
     fontFamily: "BebasNeue_400Regular",
-    fontSize: 38,
-    lineHeight: 40,
-    letterSpacing: 0.5,
-    maxWidth: "90%",
+    fontSize: 42,
+    lineHeight: 44,
+    letterSpacing: 0.6,
+    maxWidth: "88%",
   },
   bottomBlock: {
     marginTop: 14,
@@ -308,6 +324,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+  },
+  actionsPlaceholder: {
+    height: 40,
   },
   actionBtn: {
     flex: 1,

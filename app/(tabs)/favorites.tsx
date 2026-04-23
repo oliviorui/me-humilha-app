@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
 
@@ -93,53 +94,58 @@ export default function FavoritesTab() {
 
   return (
     <ScreenBackground>
-      <View style={styles.screen}>
-        <AppHeader />
+      <SafeAreaView style={styles.safeArea} edges={["top"]}>
+        <View style={styles.screen}>
+          <AppHeader />
 
-        <Text style={[styles.screenTitle, { color: palette.text }]}>
-          GUARDADAS
-        </Text>
+          <Text style={[styles.screenTitle, { color: palette.text }]}>
+            GUARDADAS
+          </Text>
 
-        <FlatList
-          data={favorites}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.savedList}
-          ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <View
-                style={[
-                  styles.emptyIcon,
-                  {
-                    backgroundColor: palette.surface,
-                    borderColor: palette.border,
-                  },
-                ]}
-              >
-                <Ionicons
-                  name="bookmark-outline"
-                  size={22}
-                  color={palette.textMuted}
-                />
+          <FlatList
+            data={favorites}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.savedList}
+            ListEmptyComponent={
+              <View style={styles.emptyState}>
+                <View
+                  style={[
+                    styles.emptyIcon,
+                    {
+                      backgroundColor: palette.surface,
+                      borderColor: palette.border,
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name="bookmark-outline"
+                    size={22}
+                    color={palette.textMuted}
+                  />
+                </View>
+
+                <Text style={[styles.emptyTitle, { color: palette.text }]}>
+                  Nada guardado ainda
+                </Text>
+
+                <Text style={[styles.emptySub, { color: palette.textMuted }]}>
+                  As humilhações ficam aqui.
+                </Text>
               </View>
-
-              <Text style={[styles.emptyTitle, { color: palette.text }]}>
-                Nada guardado ainda
-              </Text>
-
-              <Text style={[styles.emptySub, { color: palette.textMuted }]}>
-                As humilhações ficam aqui.
-              </Text>
-            </View>
-          }
-        />
-      </View>
+            }
+          />
+        </View>
+      </SafeAreaView>
     </ScreenBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   screen: {
     flex: 1,
     paddingHorizontal: 20,

@@ -14,6 +14,21 @@ type SaveFavoriteResult = {
 const STORAGE_KEY = "me_humilha_favorites";
 const LEGACY_STORAGE_KEY = "reverse_coach_favorites";
 
+function isValidFavoriteItem(value: unknown): value is FavoriteItem {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const item = value as Record<string, unknown>;
+
+  return (
+    typeof item.id === "string" &&
+    typeof item.quote === "string" &&
+    typeof item.image === "number" &&
+    typeof item.createdAt === "number"
+  );
+}
+
 async function getStoredRawFavorites(): Promise<string | null> {
   const currentData = await AsyncStorage.getItem(STORAGE_KEY);
 
@@ -46,7 +61,13 @@ export async function getFavorites(): Promise<FavoriteItem[]> {
       return [];
     }
 
-    return parsedData as FavoriteItem[];
+    const validFavorites = parsedData.filter(isValidFavoriteItem);
+
+    if (validFavorites.length !== parsedData.length) {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(validFavorites));
+    }
+
+    return validFavorites.sort((a, b) => b.createdAt - a.createdAt);
   } catch {
     return [];
   }
