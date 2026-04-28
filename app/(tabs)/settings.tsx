@@ -1,11 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 import AppHeader from "../../src/components/AppHeader";
-import ScreenBackground from "../../src/components/ScreenBackground";
 import { useAppTheme } from "../../src/theme/ThemeProvider";
 import { useAppFonts } from "../../src/hooks/useAppFonts";
+import ScreenBackground from "../../src/components/ScreenBackground";
 
 export default function SettingsTab() {
   const { palette } = useAppTheme();
@@ -17,49 +16,47 @@ export default function SettingsTab() {
 
   return (
     <ScreenBackground>
-      <SafeAreaView style={styles.safeArea} edges={["top"]}>
-        <View style={styles.screen}>
-          <AppHeader />
+      <View style={styles.screen}>
+        <AppHeader />
 
-          <Text style={[styles.screenTitle, { color: palette.text }]}>
-            DEFINIÇÕES
+        <Text style={[styles.screenTitle, { color: palette.text }]}>
+          DEFINIÇÕES
+        </Text>
+
+        <View style={styles.section}>
+          <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
+            Preferências
           </Text>
 
-          <View style={styles.section}>
-            <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
-              Preferências
-            </Text>
+          <SettingsItem
+            icon="notifications-outline"
+            label="Notificações"
+            badge="Em breve"
+          />
 
-            <SettingsItem
-              icon="notifications-outline"
-              label="Notificações"
-              badge="Em breve"
-            />
-
-            <SettingsItem
-              icon="sunny-outline"
-              label="Frase do dia"
-              badge="Em breve"
-            />
-          </View>
-
-          <View style={styles.section}>
-            <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
-              Exportação
-            </Text>
-
-            <SettingsItem
-              icon="image-outline"
-              label="Formato de exportação"
-              value="1:1 Feed"
-            />
-          </View>
-
-          <Text style={[styles.footer, { color: palette.textMuted }]}>
-            v1.0 · Feito com desamor
-          </Text>
+          <SettingsItem
+            icon="sunny-outline"
+            label="Frase do dia"
+            badge="Em breve"
+          />
         </View>
-      </SafeAreaView>
+
+        <View style={styles.section}>
+          <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
+            Exportação
+          </Text>
+
+          <SettingsItem
+            icon="image-outline"
+            label="Formato de exportação"
+            value="1:1 Feed"
+          />
+        </View>
+
+        <Text style={[styles.footer, { color: palette.textMuted }]}>
+          v1.0 · Feito com desamor
+        </Text>
+      </View>
     </ScreenBackground>
   );
 }
@@ -76,60 +73,40 @@ function SettingsItem({ icon, label, badge, value }: SettingsItemProps) {
 
   return (
     <Pressable
-      style={({ pressed }) => [
+      accessibilityRole="button"
+      disabled
+      style={[
         styles.item,
         {
           backgroundColor: palette.surface,
           borderColor: palette.border,
-          opacity: pressed ? 0.84 : 1,
         },
       ]}
     >
-      <View
-        style={[
-          styles.itemIcon,
-          {
-            backgroundColor: palette.surface2,
-            borderColor: palette.border,
-          },
-        ]}
-      >
-        <Ionicons name={icon} size={16} color={palette.accent2} />
+      <View style={[styles.itemIcon, { borderColor: palette.border }]}>
+        <Ionicons name={icon} size={18} color={palette.textMuted} />
       </View>
 
-      <Text style={[styles.itemLabel, { color: palette.text }]}>
-        {label}
-      </Text>
-
-      {badge ? (
-        <View
-          style={[
-            styles.badge,
-            {
-              backgroundColor: "rgba(192,84,224,0.15)",
-              borderColor: "rgba(192,84,224,0.20)",
-            },
-          ]}
-        >
-          <Text style={[styles.badgeText, { color: palette.accent2 }]}>
-            {badge}
-          </Text>
-        </View>
-      ) : null}
+      <Text style={[styles.itemLabel, { color: palette.text }]}>{label}</Text>
 
       {value ? (
         <Text style={[styles.itemValue, { color: palette.textMuted }]}>
           {value}
         </Text>
       ) : null}
+
+      {badge ? (
+        <View style={[styles.badge, { borderColor: palette.border }]}>
+          <Text style={[styles.badgeText, { color: palette.textMuted }]}>
+            {badge}
+          </Text>
+        </View>
+      ) : null}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
   screen: {
     flex: 1,
     paddingHorizontal: 20,

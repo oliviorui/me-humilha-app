@@ -14,18 +14,18 @@ type SaveFavoriteResult = {
 const STORAGE_KEY = "me_humilha_favorites";
 const LEGACY_STORAGE_KEY = "reverse_coach_favorites";
 
-function isValidFavoriteItem(value: unknown): value is FavoriteItem {
-  if (typeof value !== "object" || value === null) {
+function isFavoriteItem(value: unknown): value is FavoriteItem {
+  if (!value || typeof value !== "object") {
     return false;
   }
 
-  const item = value as Record<string, unknown>;
+  const candidate = value as Record<string, unknown>;
 
   return (
-    typeof item.id === "string" &&
-    typeof item.quote === "string" &&
-    typeof item.image === "number" &&
-    typeof item.createdAt === "number"
+    typeof candidate.id === "string" &&
+    typeof candidate.quote === "string" &&
+    typeof candidate.image === "number" &&
+    typeof candidate.createdAt === "number"
   );
 }
 
@@ -61,13 +61,7 @@ export async function getFavorites(): Promise<FavoriteItem[]> {
       return [];
     }
 
-    const validFavorites = parsedData.filter(isValidFavoriteItem);
-
-    if (validFavorites.length !== parsedData.length) {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(validFavorites));
-    }
-
-    return validFavorites.sort((a, b) => b.createdAt - a.createdAt);
+    return parsedData.filter(isFavoriteItem);
   } catch {
     return [];
   }
@@ -80,8 +74,7 @@ export async function saveFavorite(
     const currentFavorites = await getFavorites();
 
     const alreadyExists = currentFavorites.some(
-      (favorite) =>
-        favorite.quote === item.quote && favorite.image === item.image
+      (favorite) => favorite.quote === item.quote && favorite.image === item.image
     );
 
     if (alreadyExists) {
@@ -105,6 +98,7 @@ export async function saveFavorite(
 export async function removeFavorite(id: string): Promise<void> {
   try {
     const currentFavorites = await getFavorites();
+
     const updatedFavorites = currentFavorites.filter(
       (favorite) => favorite.id !== id
     );
