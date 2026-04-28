@@ -2,11 +2,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
+
 import { AppPalette, AppThemeMode, palettes } from "./palette";
 
 type ThemeContextValue = {
@@ -57,11 +59,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     };
   }, []);
 
-  async function toggleTheme() {
+  const toggleTheme = useCallback(async () => {
     const nextMode: AppThemeMode = mode === "dark" ? "light" : "dark";
+
     setMode(nextMode);
     await AsyncStorage.setItem(STORAGE_KEY, nextMode);
-  }
+  }, [mode]);
 
   const value = useMemo<ThemeContextValue>(() => {
     return {
@@ -71,9 +74,13 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       isReady,
       toggleTheme,
     };
-  }, [isReady, mode]);
+  }, [mode, isReady, toggleTheme]);
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>
+      {children}
+    </ThemeContext.Provider>
+  );
 }
 
 export function useAppTheme() {

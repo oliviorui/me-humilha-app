@@ -1,7 +1,8 @@
-import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { View } from "react-native";
 import { BlurView } from "expo-blur";
+import { Tabs } from "expo-router";
+import { View } from "react-native";
+
 import { useAppTheme } from "../../src/theme/ThemeProvider";
 
 type TabIconProps = {
@@ -57,6 +58,7 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
+        tabBarShowLabel: false,
         headerShown: false,
         sceneStyle: {
           backgroundColor: palette.bg,
@@ -84,12 +86,6 @@ export default function TabsLayout() {
         ),
         tabBarActiveTintColor: palette.accent2,
         tabBarInactiveTintColor: palette.textMuted,
-        tabBarLabelStyle: {
-          fontFamily: "DMSans_500Medium",
-          fontSize: 10.5,
-          letterSpacing: 0.3,
-          marginTop: 4,
-        },
         tabBarItemStyle: {
           paddingTop: 8,
           paddingBottom: 6,
@@ -101,11 +97,7 @@ export default function TabsLayout() {
         options={{
           title: "Início",
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              name="home-outline"
-              color={color}
-              focused={focused}
-            />
+            <TabIcon color={color} focused={focused} name="home-outline" />
           ),
         }}
       />
@@ -115,11 +107,7 @@ export default function TabsLayout() {
         options={{
           title: "Guardadas",
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              name="bookmark-outline"
-              color={color}
-              focused={focused}
-            />
+            <TabIcon color={color} focused={focused} name="bookmark-outline" />
           ),
         }}
       />
@@ -129,11 +117,7 @@ export default function TabsLayout() {
         options={{
           title: "Definições",
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              name="options-outline"
-              color={color}
-              focused={focused}
-            />
+            <TabIcon color={color} focused={focused} name="settings-outline" />
           ),
         }}
       />

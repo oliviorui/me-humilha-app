@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 import AppHeader from "../../src/components/AppHeader";
@@ -16,47 +17,49 @@ export default function SettingsTab() {
 
   return (
     <ScreenBackground>
-      <View style={styles.screen}>
-        <AppHeader />
+      <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
+        <View style={styles.screen}>
+          <AppHeader />
 
-        <Text style={[styles.screenTitle, { color: palette.text }]}>
-          DEFINIÇÕES
-        </Text>
-
-        <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
-            Preferências
+          <Text style={[styles.screenTitle, { color: palette.text }]}>
+            DEFINIÇÕES
           </Text>
 
-          <SettingsItem
-            icon="notifications-outline"
-            label="Notificações"
-            badge="Em breve"
-          />
+          <View style={styles.section}>
+            <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
+              Preferências
+            </Text>
 
-          <SettingsItem
-            icon="sunny-outline"
-            label="Frase do dia"
-            badge="Em breve"
-          />
-        </View>
+            <SettingsItem
+              icon="notifications-outline"
+              label="Notificações"
+              badge="Em breve"
+            />
 
-        <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
-            Exportação
+            <SettingsItem
+              icon="sunny-outline"
+              label="Frase do dia"
+              badge="Em breve"
+            />
+          </View>
+
+          <View style={styles.section}>
+            <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
+              Exportação
+            </Text>
+
+            <SettingsItem
+              icon="image-outline"
+              label="Formato de exportação"
+              value="1:1 Feed"
+            />
+          </View>
+
+          <Text style={[styles.footer, { color: palette.textMuted }]}>
+            v1.0 · Feito com desamor
           </Text>
-
-          <SettingsItem
-            icon="image-outline"
-            label="Formato de exportação"
-            value="1:1 Feed"
-          />
         </View>
-
-        <Text style={[styles.footer, { color: palette.textMuted }]}>
-          v1.0 · Feito com desamor
-        </Text>
-      </View>
+      </SafeAreaView> 
     </ScreenBackground>
   );
 }
@@ -107,6 +110,9 @@ function SettingsItem({ icon, label, badge, value }: SettingsItemProps) {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   screen: {
     flex: 1,
     paddingHorizontal: 20,
