@@ -1,101 +1,275 @@
-# 🧠 Reverse Coach App
+# Me Humilha
 
-Uma app de **motivação reversa** que mistura:
-- frases sarcásticas estilo coach reverso
-- imagens aleatórias
-- e a percentagem do ano a desaparecer
+Aplicação mobile de motivação reversa construída com Expo + React Native.
 
-Porque às vezes a melhor motivação é perceber que já estás atrasado 😐
+## Visão Geral
+
+**Me Humilha** é um aplicativo de “motivação reversa”: em vez de frases motivacionais tradicionais, ele entrega frases duras, sarcásticas e provocativas para gerar desconforto produtivo e incentivar ação.
+
+A proposta é simples:
+
+- gerar impacto emocional
+- quebrar procrastinação
+- provocar reação imediata
+- transformar frustração em movimento
+
+O app funciona de forma rápida, visual e offline-first.
 
 ---
 
-## 📱 Preview
+## Objetivo do Projeto
 
-> Em breve…
+Este projeto foi criado como MVP (Minimum Viable Product) para validar a ideia de produto e a experiência do usuário antes da construção de uma versão mais robusta com backend, contas de utilizador e conteúdo dinâmico.
+
+O foco atual é:
+
+- experiência visual forte
+- uso simples e rápido
+- partilha social
+- retenção através de frases memoráveis
 
 ---
 
-## ⚙️ Tecnologias
+## Stack Tecnológica
+
+### Mobile
 
 - React Native
-- Expo
+- Expo SDK 54
+- Expo Router
 - TypeScript
 
+### Armazenamento Local
+
+- AsyncStorage
+
+### UI / UX
+
+- Expo Blur
+- Expo Sharing
+- React Native View Shot
+- Safe Area Context
+- Ionicons
+
+### Estado e Tema
+
+- Context API
+- Theme Provider customizado
+- Sistema Light / Dark persistente
+
 ---
 
-## 🚀 Funcionalidades
+## Funcionalidades Atuais
 
-- 🎲 Frases aleatórias anti-motivacionais
-- 🖼️ Imagens aleatórias de fundo
-- ⏳ Barra de progresso do ano
-- 🔄 Botão para gerar nova combinação
+### Frase aleatória
+
+O utilizador pode gerar frases aleatórias de motivação reversa.
+
+### Fundo visual dinâmico
+
+Cada frase é acompanhada por uma imagem visual aleatória para reforçar impacto emocional.
+
+### Guardar frases
+
+O utilizador pode guardar frases favoritas localmente.
+
+### Partilhar
+
+O utilizador pode partilhar uma arte visual gerada com a frase atual.
+
+### Tema claro / escuro
+
+O app permite alternar entre modo claro e escuro com persistência local.
+
+### Onboarding
+
+Primeira experiência guiada para novos utilizadores.
+
+### Progresso do ano
+
+Exibição visual do progresso percentual do ano atual.
 
 ---
 
-## 🧪 Como correr o projeto
+## Estrutura do Projeto
 
-### 1. Clonar o repositório
+```text
+app/
+ ├── (tabs)/
+ │   ├── index.tsx
+ │   ├── favorites.tsx
+ │   ├── settings.tsx
+ │   └── _layout.tsx
+ │
+ ├── onboarding.tsx
+ ├── index.tsx
+ └── _layout.tsx
+
+src/
+ ├── components/
+ ├── data/
+ ├── hooks/
+ ├── theme/
+ ├── utils/
+ └── screens/
+
+assets/
+ ├── images/
+ └── fonts/
+```
+
+---
+
+## Arquitetura
+
+O projeto segue uma arquitetura simples e modular:
+
+- `app/` → rotas e navegação
+- `components/` → componentes reutilizáveis
+- `data/` → frases e imagens estáticas
+- `utils/` → lógica de negócio e helpers
+- `theme/` → tema global e paletas
+- `hooks/` → hooks personalizados
+
+O objetivo foi manter alta legibilidade e baixo acoplamento.
+
+---
+
+## Estado Atual do MVP
+
+### Concluído
+
+- navegação principal
+- geração de frases
+- favoritos
+- partilha
+- tema persistente
+- onboarding
+- estabilidade principal do fluxo
+
+### Em evolução
+
+- notificações locais
+- melhoria da experiência de partilha
+- refinamento visual final
+- limpeza técnica e otimização
+
+### Futuro (v2)
+
+- autenticação
+- backend real
+- sincronização entre dispositivos
+- painel administrativo
+- frases remotas
+- analytics
+- gamificação
+- planos premium
+
+---
+
+## Instalação
 
 ```bash
-git clone https://github.com/oliviorui/reverse-coach-app.git
+git clone <repo-url>
 cd reverse-coach-app
-```
-
-### 2. Instalar dependências
-
-```bash
 npm install
+npx expo start
 ```
 
-### 3. Rodar o projeto
+---
+
+## Scripts
+
+### Desenvolvimento
 
 ```bash
 npx expo start
 ```
 
-Depois:
-- usa o app Expo Go no telemóvel
-- ou abre no browser com `npm run web`
+### Limpar cache
 
----
-
-## 📂 Estrutura do projeto
-
-```
-src/
-  components/
-  data/
-  screens/
-  utils/
+```bash
+npx expo start -c
 ```
 
----
+### Lint
 
-## 💡 Roadmap
+```bash
+npm run lint
+```
 
-- [ ] Animações nas transições
-- [ ] Botão de compartilhar
-- [ ] Sistema de favoritos
-- [ ] Frases geradas por IA
-- [ ] Notificações diárias (motivação duvidosa)
+### Android
 
----
+```bash
+npx expo run:android
+```
 
-## ⚠️ Aviso
+### iOS
 
-Este app é humorístico.
-
-Não substitui disciplina, terapia ou decisões de vida minimamente decentes.
-
----
-
-## 🎯 Filosofia
-
-Este projeto existe para provar que:
-menos funcionalidade + mais personalidade = mais impacto.
+```bash
+npx expo run:ios
+```
 
 ---
 
-## 📄 Licença
+## Qualidade e Revisão Técnica
 
-MIT
+O projeto passou por auditoria técnica focada em:
+
+- estabilidade
+- limpeza de código
+- bugs reais
+- estrutura de produção
+- UX
+- segurança básica
+- preparação para release
+
+Foram corrigidos:
+
+- crash na tela de definições
+- problema de onboarding ignorado
+- erro de renderização no QuotePanel
+- inconsistências no ThemeProvider
+- problemas de tab navigation
+- melhoria da partilha visual
+- melhoria do feedback ao guardar frases
+
+---
+
+## Limitações Atuais
+
+Este MVP ainda não possui:
+
+- backend
+- autenticação
+- base de dados remota
+- sistema real de notificações
+- sincronização cloud
+
+Isso é intencional nesta fase.
+
+---
+
+## Filosofia do Produto
+
+Este app não tenta “motivar”.
+
+Ele confronta.
+
+A ideia não é conforto.
+
+É reação.
+
+---
+
+## Autor
+
+Desenvolvido por Olívio Cumbe.
+
+Projeto focado em produto, execução e validação real de mercado.
+
+---
+
+## Licença
+
+Uso privado / MVP de validação.

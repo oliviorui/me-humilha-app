@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRef, useState } from "react";
 import * as Sharing from "expo-sharing";
@@ -9,8 +9,10 @@ import ProgressBar from "../../src/components/ProgressBar";
 import QuotePanel from "../../src/components/QuotePanel";
 import GenerateButton from "../../src/components/GenerateButton";
 import ScreenBackground from "../../src/components/ScreenBackground";
+import SharePoster from "../../src/components/SharePoster";
 
 import { useAppFonts } from "../../src/hooks/useAppFonts";
+import { useAppTheme } from "../../src/theme/ThemeProvider";
 import { getYearProgress } from "../../src/utils/getYearProgress";
 import { saveFavorite } from "../../src/utils/favorites";
 import {
@@ -20,9 +22,18 @@ import {
 import { images, type AppImage } from "../../src/data/images";
 import { quotes, type Quote } from "../../src/data/quotes";
 
+type ToastKind = "success" | "warning" | "error";
+
+type ToastState = {
+  message: string;
+  kind: ToastKind;
+};
+
 export default function HomeTab() {
   const { fontsLoaded } = useAppFonts();
+  const { palette } = useAppTheme();
   const shareCardRef = useRef<ViewShot | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [quoteState, setQuoteState] = useState<RandomItemResult<Quote>>(() =>
     getRandomItem(quotes)
@@ -32,8 +43,21 @@ export default function HomeTab() {
   );
   const [isAnimating, setIsAnimating] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [toast, setToast] = useState<ToastState | null>(null);
 
   const yearProgress = getYearProgress();
+
+  function showToast(message: string, kind: ToastKind = "success") {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+
+    setToast({ message, kind });
+
+    toastTimerRef.current = setTimeout(() => {
+      setToast(null);
+    }, 2200);
+  }
 
   function handleGenerate() {
     if (isAnimating) {
@@ -63,13 +87,13 @@ export default function HomeTab() {
       });
 
       if (!result.saved) {
-        Alert.alert("Já guardada", "Essa lapada já está nas guardadas.");
+        showToast("Essa lapada já está guardada.", "warning");
         return;
       }
 
-      Alert.alert("Guardado", "Lapada guardada com sucesso.");
+      showToast("Lapada guardada com sucesso.", "success");
     } catch {
-      Alert.alert("Erro", "Não foi possível guardar agora.");
+      showToast("Não foi possível guardar agora.", "error");
     }
   }
 
@@ -78,14 +102,14 @@ export default function HomeTab() {
       const isSharingAvailable = await Sharing.isAvailableAsync();
 
       if (!isSharingAvailable) {
-        Alert.alert("Erro", "A partilha não está disponível neste dispositivo.");
+        showToast("Partilha indisponível neste dispositivo.", "error");
         return;
       }
 
       const capturedUri = await shareCardRef.current?.capture?.();
 
       if (!capturedUri) {
-        Alert.alert("Erro", "Não foi possível gerar a arte.");
+        showToast("Não foi possível gerar a arte.", "error");
         return;
       }
 
@@ -95,7 +119,7 @@ export default function HomeTab() {
         dialogTitle: "Partilhar lapada",
       });
     } catch {
-      Alert.alert("Erro", "Não foi possível partilhar agora.");
+      showToast("Não foi possível partilhar agora.", "error");
     }
   }
 
@@ -128,7 +152,6 @@ export default function HomeTab() {
               onShare={handleShare}
               isLiked={isLiked}
               isAnimating={isAnimating}
-              showActions
             />
           </View>
 
@@ -139,22 +162,45 @@ export default function HomeTab() {
             />
           </View>
 
-          <View style={styles.hiddenCaptureArea}>
+          {toast ? (
+            <View
+              pointerEvents="none"
+              style={[
+                styles.toast,
+                {
+                  backgroundColor:
+                    toast.kind === "error"
+                      ? "rgba(255,107,125,0.16)"
+                      : toast.kind === "warning"
+                        ? "rgba(245,197,24,0.16)"
+                        : "rgba(192,84,224,0.16)",
+                  borderColor:
+                    toast.kind === "error"
+                      ? palette.danger
+                      : toast.kind === "warning"
+                        ? palette.accent
+                        : palette.accent2,
+                },
+              ]}
+            >
+              <Text style={[styles.toastText, { color: palette.text }]}>
+                {toast.message}
+              </Text>
+            </View>
+          ) : null}
+
+          <View style={styles.hiddenPosterWrap} pointerEvents="none">
             <ViewShot
               ref={shareCardRef}
               options={{
                 format: "png",
                 quality: 1,
                 result: "tmpfile",
+                width: 1080,
+                height: 1080,
               }}
-              style={styles.capture}
             >
-              <QuotePanel
-                quote={quoteState.item}
-                image={imageState.item}
-                showActions={false}
-                forExport
-              />
+              <SharePoster quote={quoteState.item} image={imageState.item} />
             </ViewShot>
           </View>
         </View>
@@ -179,14 +225,28 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 82,
   },
-  hiddenCaptureArea: {
+  toast: {
     position: "absolute",
-    left: -10000,
-    top: -10000,
-    opacity: 0,
+    left: 20,
+    right: 20,
+    bottom: 154,
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
   },
-  capture: {
+  toastText: {
+    fontFamily: "DMSans_500Medium",
+    fontSize: 13,
+    textAlign: "center",
+    letterSpacing: 0.2,
+  },
+  hiddenPosterWrap: {
+    position: "absolute",
+    left: -2000,
+    top: 0,
     width: 1080,
     height: 1080,
+    opacity: 0,
   },
 });
