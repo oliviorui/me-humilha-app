@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -27,24 +27,6 @@ export default function SettingsTab() {
 
           <View style={styles.section}>
             <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
-              Preferências
-            </Text>
-
-            <SettingsItem
-              icon="notifications-outline"
-              label="Notificações"
-              badge="Em breve"
-            />
-
-            <SettingsItem
-              icon="sunny-outline"
-              label="Frase do dia"
-              badge="Em breve"
-            />
-          </View>
-
-          <View style={styles.section}>
-            <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>
               Exportação
             </Text>
 
@@ -53,13 +35,19 @@ export default function SettingsTab() {
               label="Formato de exportação"
               value="1:1 Feed"
             />
+
+            <SettingsItem
+              icon="color-palette-outline"
+              label="Tema"
+              value="Claro/Escuro no topo"
+            />
           </View>
 
           <Text style={[styles.footer, { color: palette.textMuted }]}>
             v1.0 · Feito com desamor
           </Text>
         </View>
-      </SafeAreaView> 
+      </SafeAreaView>
     </ScreenBackground>
   );
 }
@@ -67,17 +55,14 @@ export default function SettingsTab() {
 type SettingsItemProps = {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
-  badge?: string;
   value?: string;
 };
 
-function SettingsItem({ icon, label, badge, value }: SettingsItemProps) {
+function SettingsItem({ icon, label, value }: SettingsItemProps) {
   const { palette } = useAppTheme();
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      disabled
+    <View
       style={[
         styles.item,
         {
@@ -97,15 +82,7 @@ function SettingsItem({ icon, label, badge, value }: SettingsItemProps) {
           {value}
         </Text>
       ) : null}
-
-      {badge ? (
-        <View style={[styles.badge, { borderColor: palette.border }]}>
-          <Text style={[styles.badgeText, { color: palette.textMuted }]}>
-            {badge}
-          </Text>
-        </View>
-      ) : null}
-    </Pressable>
+    </View>
   );
 }
 
@@ -162,17 +139,6 @@ const styles = StyleSheet.create({
   itemValue: {
     fontFamily: "DMSans_400Regular",
     fontSize: 12,
-  },
-  badge: {
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
-  badgeText: {
-    fontFamily: "DMSans_500Medium",
-    fontSize: 10,
-    letterSpacing: 1,
   },
   footer: {
     marginTop: 24,

@@ -192,6 +192,7 @@ export default function HomeTab() {
           <View style={styles.hiddenPosterWrap} pointerEvents="none">
             <ViewShot
               ref={shareCardRef}
+              style={styles.shareShot}
               options={{
                 format: "png",
                 quality: 1,
@@ -243,10 +244,13 @@ const styles = StyleSheet.create({
   },
   hiddenPosterWrap: {
     position: "absolute",
-    left: -2000,
+    left: -1200,
     top: 0,
     width: 1080,
     height: 1080,
-    opacity: 0,
+  },
+  shareShot: {
+    width: 1080,
+    height: 1080,
   },
 });

@@ -12,6 +12,7 @@ export default function SharePoster({ quote, image }: SharePosterProps) {
 
   return (
     <View
+      collapsable={false}
       style={[
         styles.poster,
         {
