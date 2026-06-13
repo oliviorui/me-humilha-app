@@ -161,13 +161,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   description: {
-    fontFamily: "DMSans_700Bold",
+    fontFamily: "PlusJakartaSans_700Bold",
     fontSize: 22,
     lineHeight: 30,
     marginBottom: 10,
   },
   secondary: {
-    fontFamily: "DMSans_400Regular",
+    fontFamily: "PlusJakartaSans_400Regular",
     fontSize: 15,
     lineHeight: 22,
     marginBottom: 22,
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     marginBottom: 22,
   },
   highlightText: {
-    fontFamily: "DMSans_700Bold",
+    fontFamily: "PlusJakartaSans_700Bold",
     fontSize: 14,
     lineHeight: 20,
   },

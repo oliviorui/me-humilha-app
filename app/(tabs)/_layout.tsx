@@ -9,46 +9,38 @@ type TabIconProps = {
   color: string;
   focused: boolean;
   name: keyof typeof Ionicons.glyphMap;
+  focusedName: keyof typeof Ionicons.glyphMap;
 };
 
-function TabIcon({ color, focused, name }: TabIconProps) {
+function TabIcon({ color, focused, name, focusedName }: TabIconProps) {
   const { palette } = useAppTheme();
 
   return (
-    <View style={styles.iconWrap}>
-      {focused ? (
-        <View
-          style={[
-            styles.activeLine,
-            {
-              backgroundColor: palette.accent2,
-              shadowColor: palette.accent2,
-            },
-          ]}
-        />
-      ) : null}
-
-      <Ionicons name={name} size={22} color={color} />
+    <View
+      style={[
+        styles.iconWrap,
+        focused
+          ? {
+              backgroundColor: palette.glow,
+              borderColor: palette.accent2,
+            }
+          : null,
+      ]}
+    >
+      <Ionicons name={focused ? focusedName : name} size={22} color={color} />
     </View>
   );
 }
 
 const styles = {
   iconWrap: {
-    width: 32,
+    width: 42,
+    height: 32,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "transparent",
     alignItems: "center" as const,
     justifyContent: "center" as const,
-  },
-  activeLine: {
-    position: "absolute" as const,
-    top: -12,
-    width: 32,
-    height: 2.5,
-    borderBottomLeftRadius: 4,
-    borderBottomRightRadius: 4,
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 0 },
   },
 };
 
@@ -58,37 +50,49 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarShowLabel: false,
+        tabBarShowLabel: true,
         headerShown: false,
         sceneStyle: {
           backgroundColor: palette.bg,
         },
         tabBarStyle: {
           position: "absolute",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: 68,
-          paddingTop: 0,
-          paddingBottom: 6,
+          left: 16,
+          right: 16,
+          bottom: 14,
+          height: 72,
+          paddingTop: 8,
+          paddingBottom: 9,
+          paddingHorizontal: 8,
           backgroundColor: isDark
-            ? "rgba(13,10,18,0.84)"
-            : "rgba(243,238,255,0.88)",
+            ? "rgba(13,10,18,0.9)"
+            : "rgba(243,238,255,0.94)",
+          borderWidth: 1,
           borderTopWidth: 1,
-          borderTopColor: palette.border,
+          borderColor: palette.border,
+          borderRadius: 26,
+          shadowColor: palette.shadow,
+          shadowOpacity: 0.24,
+          shadowRadius: 22,
+          shadowOffset: { width: 0, height: 10 },
+          elevation: 12,
         },
         tabBarBackground: () => (
           <BlurView
-            intensity={18}
+            intensity={22}
             tint={isDark ? "dark" : "light"}
-            style={{ flex: 1 }}
+            style={{ flex: 1, borderRadius: 26, overflow: "hidden" }}
           />
         ),
         tabBarActiveTintColor: palette.accent2,
         tabBarInactiveTintColor: palette.textMuted,
+        tabBarLabelStyle: {
+          fontFamily: "PlusJakartaSans_700Bold",
+          fontSize: 10.5,
+          marginTop: 1,
+        },
         tabBarItemStyle: {
-          paddingTop: 8,
-          paddingBottom: 6,
+          borderRadius: 20,
         },
       }}
     >
@@ -97,7 +101,12 @@ export default function TabsLayout() {
         options={{
           title: "Início",
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon color={color} focused={focused} name="home-outline" />
+            <TabIcon
+              color={color}
+              focused={focused}
+              name="home-outline"
+              focusedName="home"
+            />
           ),
         }}
       />
@@ -107,7 +116,12 @@ export default function TabsLayout() {
         options={{
           title: "Guardadas",
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon color={color} focused={focused} name="bookmark-outline" />
+            <TabIcon
+              color={color}
+              focused={focused}
+              name="bookmark-outline"
+              focusedName="bookmark"
+            />
           ),
         }}
       />
@@ -117,7 +131,12 @@ export default function TabsLayout() {
         options={{
           title: "Definições",
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon color={color} focused={focused} name="settings-outline" />
+            <TabIcon
+              color={color}
+              focused={focused}
+              name="settings-outline"
+              focusedName="settings"
+            />
           ),
         }}
       />

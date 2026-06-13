@@ -88,7 +88,7 @@ export default function SharePoster({ quote, image }: SharePosterProps) {
           <View>
             <View style={[styles.divider, { backgroundColor: palette.border }]} />
 
-            <Text style={[styles.signature, { color: palette.textMuted }]}>
+            <Text style={[styles.signature, { color: palette.text }]}>
               ME HUMILHA
             </Text>
           </View>
@@ -111,19 +111,19 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   bgImage: {
-    opacity: 0.4,
+    opacity: 0.65,
   },
   imageTone: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(13,10,18,0.24)",
+    backgroundColor: "rgba(13,10,18,0.12)",
   },
   imageBottomShade: {
     position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
-    height: "38%",
-    backgroundColor: "rgba(13,10,18,0.48)",
+    height: 0,
+    backgroundColor: "rgba(13,10,18,0.42)",
   },
   cornerTop: {
     position: "absolute",
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     shadowRadius: 18,
   },
   eyebrowText: {
-    fontFamily: "DMSans_500Medium",
+    fontFamily: "PlusJakartaSans_500Medium",
     fontSize: 24,
     letterSpacing: 7,
     textTransform: "uppercase",
@@ -194,9 +194,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   phrase: {
-    fontFamily: "BebasNeue_400Regular",
-    fontSize: 92,
-    lineHeight: 96,
+    fontFamily: "PlusJakartaSans_800ExtraBold",
+    fontSize: 84,
+    lineHeight: 92,
     letterSpacing: 1,
     maxWidth: "92%",
   },
@@ -205,9 +205,9 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   signature: {
-    fontFamily: "DMSans_500Medium",
-    fontSize: 24,
-    letterSpacing: 8,
+    fontFamily: "PlusJakartaSans_500Medium",
+    fontSize: 30,
+    letterSpacing: 10,
     textTransform: "uppercase",
   },
 });

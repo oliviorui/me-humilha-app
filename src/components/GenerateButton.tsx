@@ -26,8 +26,8 @@ export default function GenerateButton({
       onPress={disabled ? undefined : onGenerate}
     >
       <LinearGradient
-        colors={[palette.accent2, palette.accent3]}
-        start={{ x: 0, y: 0.2 }}
+        colors={[palette.accent2, palette.accent3, palette.accent2]}
+        start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[
           styles.button,
@@ -41,12 +41,12 @@ export default function GenerateButton({
         <View style={styles.content}>
           <Ionicons
             name={disabled ? "reload-outline" : "sparkles-outline"}
-            size={20}
+            size={19}
             color="#FFFFFF"
           />
 
           <Text style={styles.text}>
-            {disabled ? "A PENSAR..." : "NOVA HUMILHAÇÃO"}
+            {disabled ? "A pensar..." : "Nova humilhação"}
           </Text>
         </View>
       </LinearGradient>
@@ -60,35 +60,35 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "100%",
-    height: 58,
-    borderRadius: 16,
+    height: 56,
+    borderRadius: 18,
     justifyContent: "center",
     overflow: "hidden",
     position: "relative",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.38,
-    shadowRadius: 28,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.32,
+    shadowRadius: 24,
     elevation: 6,
   },
   shine: {
     position: "absolute",
     top: 0,
-    left: -40,
-    width: 120,
+    left: -35,
+    width: 105,
     height: "100%",
-    backgroundColor: "rgba(255,255,255,0.10)",
+    backgroundColor: "rgba(255,255,255,0.14)",
     transform: [{ skewX: "-20deg" }],
   },
   content: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 10,
+    gap: 9,
   },
   text: {
-    fontFamily: "BebasNeue_400Regular",
-    fontSize: 21,
-    letterSpacing: 3,
+    fontFamily: "PlusJakartaSans_800ExtraBold",
+    fontSize: 15.5,
+    letterSpacing: 0.2,
     color: "#FFFFFF",
   },
 });

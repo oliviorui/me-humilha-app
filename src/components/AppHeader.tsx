@@ -4,9 +4,13 @@ import { useAppTheme } from "../theme/ThemeProvider";
 
 type AppHeaderProps = {
   title?: string;
+  subtitle?: string;
 };
 
-export default function AppHeader({ title = "ME HUMILHA" }: AppHeaderProps) {
+export default function AppHeader({
+  title = "ME HUMILHA",
+  subtitle = "a tua dose diária de realidade",
+}: AppHeaderProps) {
   const { palette } = useAppTheme();
 
   return (
@@ -17,6 +21,7 @@ export default function AppHeader({ title = "ME HUMILHA" }: AppHeaderProps) {
             styles.logoMark,
             {
               shadowColor: palette.accent2,
+              borderColor: palette.border,
             },
           ]}
         >
@@ -27,9 +32,18 @@ export default function AppHeader({ title = "ME HUMILHA" }: AppHeaderProps) {
           />
         </View>
 
-        <Text style={[styles.logoText, { color: palette.text }]}>
-          {title}
-        </Text>
+        <View style={styles.titleWrap}>
+          <Text style={[styles.logoText, { color: palette.text }]}>
+            {title}
+          </Text>
+
+          <Text
+            style={[styles.subtitle, { color: palette.textMuted }]}
+            numberOfLines={1}
+          >
+            {subtitle}
+          </Text>
+        </View>
       </View>
 
       <ThemeToggle />
@@ -39,12 +53,12 @@ export default function AppHeader({ title = "ME HUMILHA" }: AppHeaderProps) {
 
 const styles = StyleSheet.create({
   header: {
-    minHeight: 58,
+    minHeight: 62,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingTop: 8,
-    paddingBottom: 14,
+    paddingBottom: 12,
     gap: 12,
   },
   logoArea: {
@@ -55,14 +69,15 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
   logoMark: {
-    width: 46,
-    height: 46,
-    borderRadius: 14,
+    width: 44,
+    height: 44,
+    borderRadius: 16,
+    borderWidth: 1,
     backgroundColor: "#c054e0",
     alignItems: "center",
     justifyContent: "center",
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.45,
+    shadowOpacity: 0.36,
     shadowRadius: 18,
     elevation: 6,
     flexShrink: 0,
@@ -72,11 +87,21 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  titleWrap: {
+    flex: 1,
+    minWidth: 0,
+  },
   logoText: {
     fontFamily: "BebasNeue_400Regular",
     fontSize: 24,
     letterSpacing: 2.6,
-    lineHeight: 24,
-    flexShrink: 1,
+    lineHeight: 25,
+  },
+  subtitle: {
+    marginTop: 1,
+    fontFamily: "PlusJakartaSans_500Medium",
+    fontSize: 10.5,
+    letterSpacing: 0.3,
+    opacity: 0.72,
   },
 });
