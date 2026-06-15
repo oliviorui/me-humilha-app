@@ -14,6 +14,7 @@ import { router, useFocusEffect } from "expo-router";
 
 import AppHeader from "../../src/components/AppHeader";
 import ScreenBackground from "../../src/components/ScreenBackground";
+import { Card, EmptyState, LoadingScreen, SectionHeader } from "../../src/components/ui";
 import { useAppTheme } from "../../src/theme/ThemeProvider";
 import {
   getFavorites,
@@ -26,10 +27,15 @@ export default function FavoritesTab() {
   const { palette } = useAppTheme();
   const { fontsLoaded } = useAppFonts();
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const loadFavorites = useCallback(async () => {
-    const data = await getFavorites();
-    setFavorites(data);
+    try {
+      const data = await getFavorites();
+      setFavorites(data);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   useFocusEffect(
@@ -49,17 +55,13 @@ export default function FavoritesTab() {
 
   function renderItem({ item }: { item: FavoriteItem }) {
     return (
-      <View
-        style={[
-          styles.savedItem,
-          {
-            backgroundColor: palette.surface,
-            borderColor: palette.border,
-            shadowColor: palette.shadow,
-          },
-        ]}
-      >
-        <Image source={item.image} style={styles.thumb} resizeMode="cover" />
+      <Card elevated style={styles.savedItemCard} contentStyle={styles.savedItem}>
+        <Image
+          source={item.image}
+          style={styles.thumb}
+          resizeMode="cover"
+          accessibilityIgnoresInvertColors
+        />
 
         <View style={styles.textBlock}>
           <Text
@@ -69,7 +71,9 @@ export default function FavoritesTab() {
             {item.quote}
           </Text>
 
-          <Text style={[styles.savedMeta, { color: palette.textMuted }]}>guardada para futuras vergonhas</Text>
+          <Text style={[styles.savedMeta, { color: palette.textMuted }]}>
+            Guardada
+          </Text>
         </View>
 
         <Pressable
@@ -82,16 +86,18 @@ export default function FavoritesTab() {
             },
           ]}
           onPress={() => handleRemove(item.id)}
+          accessibilityRole="button"
           accessibilityLabel="Remover frase guardada"
+          accessibilityHint="Remove esta frase da lista de guardadas."
         >
           <Ionicons name="trash-outline" size={16} color={palette.textMuted} />
         </Pressable>
-      </View>
+      </Card>
     );
   }
 
   if (!fontsLoaded) {
-    return <ScreenBackground />;
+    return <LoadingScreen />;
   }
 
   return (
@@ -100,62 +106,42 @@ export default function FavoritesTab() {
         <View style={styles.screen}>
           <AppHeader subtitle="as lapadas que mereceram arquivo" />
 
-          <View style={styles.titleRow}>
-            <View>
-              <Text style={[styles.screenTitle, { color: palette.text }]}>GUARDADAS</Text>
-              <Text style={[styles.screenSub, { color: palette.textMuted }]}>
-                {favorites.length === 1
-                  ? "1 frase salva"
-                  : `${favorites.length} frases salvas`}
-              </Text>
-            </View>
-          </View>
-
-          <FlatList
-            data={favorites}
-            keyExtractor={(item) => item.id}
-            renderItem={renderItem}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={[
-              styles.savedList,
-              favorites.length === 0 ? styles.savedListEmpty : null,
-            ]}
-            ListEmptyComponent={
-              <View style={styles.emptyState}>
-                <View
-                  style={[
-                    styles.emptyIcon,
-                    {
-                      backgroundColor: palette.surface,
-                      borderColor: palette.border,
-                      shadowColor: palette.shadow,
-                    },
-                  ]}
-                >
-                  <Ionicons name="bookmark-outline" size={25} color={palette.accent2} />
-                </View>
-
-                <Text style={[styles.emptyTitle, { color: palette.text }]}>Ainda não guardaste nenhuma lapada</Text>
-
-                <Text style={[styles.emptySub, { color: palette.textMuted }]}>Quando uma frase bater forte, toca em “Guardar” para ela aparecer aqui.</Text>
-
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.emptyButton,
-                    {
-                      backgroundColor: palette.surface2,
-                      borderColor: palette.border,
-                      opacity: pressed ? 0.82 : 1,
-                    },
-                  ]}
-                  onPress={() => router.navigate("/(tabs)")}
-                >
-                  <Ionicons name="sparkles-outline" size={16} color={palette.accent2} />
-                  <Text style={[styles.emptyButtonText, { color: palette.text }]}>Gerar primeira</Text>
-                </Pressable>
-              </View>
-            }
+          <SectionHeader
+            title="Guardadas"
+            subtitle="As frases que bateram forte ficam aqui, mesmo offline."
+            meta={favorites.length === 1 ? "1 salva" : `${favorites.length} salvas`}
           />
+
+          {isLoading ? (
+            <View style={styles.loadingWrap}>
+              <EmptyState
+                icon="hourglass-outline"
+                title="A carregar arquivo"
+                description="Estamos a procurar as tuas lapadas guardadas neste dispositivo."
+              />
+            </View>
+          ) : (
+            <FlatList
+              data={favorites}
+              keyExtractor={(item) => item.id}
+              renderItem={renderItem}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={[
+                styles.savedList,
+                favorites.length === 0 ? styles.savedListEmpty : null,
+              ]}
+              ListEmptyComponent={
+                <EmptyState
+                  icon="bookmark-outline"
+                  title="Ainda não guardaste nenhuma lapada"
+                  description="Quando uma frase bater forte, toca em “Guardar” para ela aparecer aqui."
+                  actionLabel="Gerar primeira"
+                  actionIcon="sparkles-outline"
+                  onAction={() => router.navigate("/(tabs)")}
+                />
+              }
+            />
+          )}
         </View>
       </SafeAreaView>
     </ScreenBackground>
@@ -171,21 +157,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 16,
   },
-  titleRow: {
-    marginBottom: 14,
-  },
-  screenTitle: {
-    fontFamily: "PlusJakartaSans_700Bold",
-    fontSize: 32,
-    letterSpacing: 2,
-    lineHeight: 34,
-  },
-  screenSub: {
-    marginTop: 2,
-    fontFamily: "PlusJakartaSans_500Medium",
-    fontSize: 12,
-    opacity: 0.75,
-  },
   savedList: {
     gap: 12,
     paddingBottom: 112,
@@ -194,18 +165,20 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
   },
-  savedItem: {
-    borderWidth: 1,
+  loadingWrap: {
+    flex: 1,
+    justifyContent: "center",
+    paddingBottom: 112,
+  },
+  savedItemCard: {
     borderRadius: 20,
+  },
+  savedItem: {
     paddingVertical: 12,
     paddingHorizontal: 12,
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 2,
   },
   thumb: {
     width: 58,
@@ -237,53 +210,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
-  },
-  emptyState: {
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 9,
-    paddingHorizontal: 18,
-    paddingVertical: 42,
-  },
-  emptyIcon: {
-    width: 62,
-    height: 62,
-    borderWidth: 1,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 6,
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 3,
-  },
-  emptyTitle: {
-    fontFamily: "PlusJakartaSans_700Bold",
-    fontSize: 16,
-    textAlign: "center",
-  },
-  emptySub: {
-    fontFamily: "PlusJakartaSans_400Regular",
-    fontSize: 13,
-    lineHeight: 19,
-    textAlign: "center",
-    opacity: 0.68,
-    maxWidth: 290,
-  },
-  emptyButton: {
-    marginTop: 10,
-    minHeight: 42,
-    borderRadius: 14,
-    borderWidth: 1,
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  emptyButtonText: {
-    fontFamily: "PlusJakartaSans_700Bold",
-    fontSize: 13,
   },
 });

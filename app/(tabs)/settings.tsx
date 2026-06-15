@@ -6,13 +6,14 @@ import AppHeader from "../../src/components/AppHeader";
 import { useAppTheme } from "../../src/theme/ThemeProvider";
 import { useAppFonts } from "../../src/hooks/useAppFonts";
 import ScreenBackground from "../../src/components/ScreenBackground";
+import { Card, LoadingScreen, SectionHeader } from "../../src/components/ui";
 
 export default function SettingsTab() {
   const { palette } = useAppTheme();
   const { fontsLoaded } = useAppFonts();
 
   if (!fontsLoaded) {
-    return <ScreenBackground />;
+    return <LoadingScreen />;
   }
 
   return (
@@ -21,44 +22,26 @@ export default function SettingsTab() {
         <View style={styles.screen}>
           <AppHeader subtitle="controlo mínimo para caos máximo" />
 
-          <Text style={[styles.screenTitle, { color: palette.text }]}>DEFINIÇÕES</Text>
-          <Text style={[styles.screenSub, { color: palette.textMuted }]}>Tudo pronto para a primeira versão pública.</Text>
+          <SectionHeader
+            title="Definições"
+            subtitle="Estado da experiência, recursos ativos e informações da versão pública."
+            meta="v1.0"
+          />
 
-          <View
-            style={[
-              styles.statusCard,
-              {
-                backgroundColor: palette.surface,
-                borderColor: palette.border,
-                shadowColor: palette.shadow,
-              },
-            ]}
-          >
-            <View style={[styles.statusIcon, { backgroundColor: palette.glow }]}> 
-              <Ionicons name="rocket-outline" size={20} color={palette.accent2} />
-            </View>
+          <View style={styles.section}>
+            <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>Geral</Text>
 
-            <View style={styles.statusTextWrap}>
-              <Text style={[styles.statusTitle, { color: palette.text }]}>MVP limpo e direto</Text>
-              <Text style={[styles.statusSub, { color: palette.textMuted }]}>Sem botões mortos, com partilha 1:1 e tema claro/escuro ativo.</Text>
-            </View>
+            <SettingsItem icon="color-palette-outline" label="Tema" value="Ativo" />
           </View>
 
           <View style={styles.section}>
-            <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>Experiência</Text>
+            <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>Sistema</Text>
 
-            <SettingsItem icon="image-outline" label="Arte de partilha" value="Formato 1:1" />
-            <SettingsItem icon="color-palette-outline" label="Tema visual" value="Botão no topo" />
-            <SettingsItem icon="bookmark-outline" label="Frases guardadas" value="Offline" />
+            <SettingsItem icon="phone-portrait-outline" label="Versão" value="v1.0" />
+            <SettingsItem icon="shield-checkmark-outline" label="Estado" value="Pronto" />
           </View>
 
-          <View style={styles.section}>
-            <Text style={[styles.sectionLabel, { color: palette.textMuted }]}>Versão</Text>
-
-            <SettingsItem icon="phone-portrait-outline" label="Aplicação" value="v1.0" />
-          </View>
-
-          <Text style={[styles.footer, { color: palette.textMuted }]}>Feito com desamor · pronto para ser testado</Text>
+          <Text style={[styles.footer, { color: palette.textMuted }]}>Feito com desamor · Olívio Cumbe</Text>
         </View>
       </SafeAreaView>
     </ScreenBackground>
@@ -75,15 +58,7 @@ function SettingsItem({ icon, label, value }: SettingsItemProps) {
   const { palette } = useAppTheme();
 
   return (
-    <View
-      style={[
-        styles.item,
-        {
-          backgroundColor: palette.surface,
-          borderColor: palette.border,
-        },
-      ]}
-    >
+    <Card style={styles.itemCard} contentStyle={styles.item} accessibilityLabel={`${label}${value ? `, ${value}` : ""}`}>
       <View style={[styles.itemIcon, { backgroundColor: palette.surface2, borderColor: palette.border }]}> 
         <Ionicons name={icon} size={18} color={palette.accent2} />
       </View>
@@ -95,7 +70,7 @@ function SettingsItem({ icon, label, value }: SettingsItemProps) {
           <Text style={[styles.itemValue, { color: palette.textMuted }]}>{value}</Text>
         </View>
       ) : null}
-    </View>
+    </Card>
   );
 }
 
@@ -108,31 +83,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 16,
   },
-  screenTitle: {
-    fontFamily: "PlusJakartaSans_700Bold",
-    fontSize: 32,
-    letterSpacing: 2,
-    lineHeight: 34,
-  },
-  screenSub: {
-    marginTop: 2,
-    marginBottom: 16,
-    fontFamily: "PlusJakartaSans_500Medium",
-    fontSize: 12,
-    opacity: 0.72,
-  },
   statusCard: {
-    borderWidth: 1,
-    borderRadius: 22,
     padding: 16,
     flexDirection: "row",
     alignItems: "center",
     gap: 13,
     marginBottom: 22,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 18,
-    elevation: 3,
   },
   statusIcon: {
     width: 44,
@@ -168,15 +124,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 4,
   },
-  item: {
-    borderWidth: 1,
+  itemCard: {
+    marginBottom: 10,
     borderRadius: 18,
+  },
+  item: {
     paddingVertical: 13,
     paddingHorizontal: 13,
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    marginBottom: 10,
   },
   itemIcon: {
     width: 36,

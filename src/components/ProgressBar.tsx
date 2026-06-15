@@ -11,7 +11,7 @@ type ProgressBarProps = {
 const yearMessages: string[] = [
   "Ainda dá tempo de parar de fingir que há um plano.",
   "O calendário avançou. Tu ainda estás no modo rascunho.",
-  "Metade do ano quase foi. A grande virada ficou em reunião.",
+  "Ainda dá tempo. Talvez.",
   "O ano está a correr. Tu estás a negociar com a preguiça.",
   "Reta final: agora ou mais uma desculpa premium.",
 ];
@@ -48,7 +48,6 @@ export default function ProgressBar({
     >
       <View style={styles.topRow}>
         <View style={styles.titleBlock}>
-          <Text style={[styles.yearLabel, { color: palette.textMuted }]}>PROGRESSO DO ANO</Text>
           <Text style={[styles.yearTitle, { color: palette.text }]}>{year} está a escapar</Text>
         </View>
 

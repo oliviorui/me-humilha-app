@@ -9,7 +9,7 @@ type AppHeaderProps = {
 
 export default function AppHeader({
   title = "ME HUMILHA",
-  subtitle = "a tua dose diária de realidade",
+  subtitle = "realidade sem filtro",
 }: AppHeaderProps) {
   const { palette } = useAppTheme();
 

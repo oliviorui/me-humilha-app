@@ -45,6 +45,8 @@ function ActionButton({
         },
       ]}
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
     >
       <Ionicons
         name={icon}
@@ -176,7 +178,7 @@ export default function QuotePanel({
               <View style={styles.actions}>
                 <ActionButton
                   icon={isLiked ? "heart" : "heart-outline"}
-                  label="Gostei"
+                  label="Curtir"
                   onPress={onFavorite}
                   isLiked={isLiked}
                 />
