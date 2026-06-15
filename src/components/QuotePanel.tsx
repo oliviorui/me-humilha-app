@@ -17,6 +17,7 @@ type QuotePanelProps = {
   onShare: () => void;
   isLiked?: boolean;
   isAnimating?: boolean;
+  actionsDisabled?: boolean;
 };
 
 type ActionButtonProps = {
@@ -24,6 +25,7 @@ type ActionButtonProps = {
   label: string;
   onPress: () => void;
   isLiked?: boolean;
+  disabled?: boolean;
 };
 
 function ActionButton({
@@ -31,6 +33,7 @@ function ActionButton({
   label,
   onPress,
   isLiked = false,
+  disabled = false,
 }: ActionButtonProps) {
   const { palette } = useAppTheme();
 
@@ -41,11 +44,12 @@ function ActionButton({
         {
           backgroundColor: isLiked ? "rgba(192,84,224,0.12)" : palette.surface2,
           borderColor: isLiked ? palette.accent2 : palette.border,
-          opacity: pressed ? 0.86 : 1,
+          opacity: disabled ? 0.5 : pressed ? 0.86 : 1,
         },
       ]}
-      onPress={onPress}
+      onPress={disabled ? undefined : onPress}
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
       accessibilityLabel={label}
     >
       <Ionicons
@@ -75,6 +79,7 @@ export default function QuotePanel({
   onShare,
   isLiked = false,
   isAnimating = false,
+  actionsDisabled = false,
 }: QuotePanelProps) {
   const { palette } = useAppTheme();
 
@@ -181,18 +186,21 @@ export default function QuotePanel({
                   label="Curtir"
                   onPress={onFavorite}
                   isLiked={isLiked}
+                  disabled={actionsDisabled}
                 />
 
                 <ActionButton
                   icon="bookmark-outline"
                   label="Guardar"
                   onPress={onSave}
+                  disabled={actionsDisabled}
                 />
 
                 <ActionButton
                   icon="share-social-outline"
                   label="Partilhar"
                   onPress={onShare}
+                  disabled={actionsDisabled}
                 />
               </View>
             </View>

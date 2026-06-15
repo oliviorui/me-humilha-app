@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -16,7 +17,7 @@ type ThemeContextValue = {
   palette: AppPalette;
   isDark: boolean;
   isReady: boolean;
-  toggleTheme: () => Promise<void>;
+  toggleTheme: () => Promise<boolean>;
 };
 
 const STORAGE_KEY = "me_humilha_theme_mode";
@@ -30,6 +31,8 @@ type ThemeProviderProps = {
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [mode, setMode] = useState<AppThemeMode>("dark");
   const [isReady, setIsReady] = useState(false);
+  const modeRef = useRef<AppThemeMode>("dark");
+  const themeWriteIdRef = useRef(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -43,6 +46,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         }
 
         if (storedValue === "light" || storedValue === "dark") {
+          modeRef.current = storedValue;
           setMode(storedValue);
         }
       } finally {
@@ -60,11 +64,26 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   }, []);
 
   const toggleTheme = useCallback(async () => {
-    const nextMode: AppThemeMode = mode === "dark" ? "light" : "dark";
+    const previousMode = modeRef.current;
+    const nextMode: AppThemeMode = previousMode === "dark" ? "light" : "dark";
+    const writeId = themeWriteIdRef.current + 1;
 
+    themeWriteIdRef.current = writeId;
+    modeRef.current = nextMode;
     setMode(nextMode);
-    await AsyncStorage.setItem(STORAGE_KEY, nextMode);
-  }, [mode]);
+
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, nextMode);
+      return true;
+    } catch {
+      if (themeWriteIdRef.current === writeId) {
+        modeRef.current = previousMode;
+        setMode(previousMode);
+      }
+
+      return false;
+    }
+  }, []);
 
   const value = useMemo<ThemeContextValue>(() => {
     return {

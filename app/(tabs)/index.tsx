@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from "react-native";
+import { InteractionManager, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as Sharing from "expo-sharing";
 import ViewShot from "react-native-view-shot";
 
@@ -34,6 +34,8 @@ export default function HomeTab() {
   const { palette } = useAppTheme();
   const shareCardRef = useRef<ViewShot | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const generateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isMountedRef = useRef(true);
 
   const [quoteState, setQuoteState] = useState<RandomItemResult<Quote>>(() =>
     getRandomItem(quotes)
@@ -43,9 +45,25 @@ export default function HomeTab() {
   );
   const [isAnimating, setIsAnimating] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
 
   const yearProgress = getYearProgress();
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+
+      if (generateTimerRef.current) {
+        clearTimeout(generateTimerRef.current);
+      }
+    };
+  }, []);
 
   function showToast(message: string, kind: ToastKind = "success") {
     if (toastTimerRef.current) {
@@ -55,7 +73,9 @@ export default function HomeTab() {
     setToast({ message, kind });
 
     toastTimerRef.current = setTimeout(() => {
-      setToast(null);
+      if (isMountedRef.current) {
+        setToast(null);
+      }
     }, 2200);
   }
 
@@ -67,7 +87,11 @@ export default function HomeTab() {
     setIsAnimating(true);
     setIsLiked(false);
 
-    setTimeout(() => {
+    generateTimerRef.current = setTimeout(() => {
+      if (!isMountedRef.current) {
+        return;
+      }
+
       const nextQuote = getRandomItem(quotes, quoteState.index);
       const nextImage = getRandomItem(images, imageState.index);
 
@@ -78,6 +102,12 @@ export default function HomeTab() {
   }
 
   async function handleSave() {
+    if (isAnimating || isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+
     try {
       const result = await saveFavorite({
         id: `${Date.now()}-${quoteState.index}-${imageState.index}`,
@@ -94,10 +124,18 @@ export default function HomeTab() {
       showToast("Lapada guardada com sucesso.", "success");
     } catch {
       showToast("Não foi possível guardar agora.", "error");
+    } finally {
+      setIsSaving(false);
     }
   }
 
   async function handleShare() {
+    if (isAnimating || isSharing) {
+      return;
+    }
+
+    setIsSharing(true);
+
     try {
       const isSharingAvailable = await Sharing.isAvailableAsync();
 
@@ -105,6 +143,10 @@ export default function HomeTab() {
         showToast("Partilha indisponível neste dispositivo.", "error");
         return;
       }
+
+      await new Promise<void>((resolve) => {
+        InteractionManager.runAfterInteractions(() => resolve());
+      });
 
       const capturedUri = await shareCardRef.current?.capture?.();
 
@@ -120,6 +162,8 @@ export default function HomeTab() {
       });
     } catch {
       showToast("Não foi possível partilhar agora.", "error");
+    } finally {
+      setIsSharing(false);
     }
   }
 
@@ -152,13 +196,14 @@ export default function HomeTab() {
               onShare={handleShare}
               isLiked={isLiked}
               isAnimating={isAnimating}
+              actionsDisabled={isAnimating || isSaving || isSharing}
             />
           </View>
 
           <View style={styles.buttonWrap}>
             <GenerateButton
               onGenerate={handleGenerate}
-              disabled={isAnimating}
+              disabled={isAnimating || isSaving || isSharing}
             />
           </View>
 
