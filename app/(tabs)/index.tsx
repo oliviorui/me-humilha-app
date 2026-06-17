@@ -262,13 +262,14 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     paddingHorizontal: 18,
+    paddingTop: 18,
   },
   cardArea: {
     flex: 1,
-    paddingTop: 2,
+    paddingTop: 10,
   },
   buttonWrap: {
-    paddingTop: 2,
+    paddingTop: 14,
     paddingBottom: 100,
   },
   toast: {

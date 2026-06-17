@@ -11,7 +11,7 @@ type ProgressBarProps = {
 const yearMessages: string[] = [
   "Ainda dá tempo de parar de fingir que há um plano.",
   "O calendário avançou. Tu ainda estás no modo rascunho.",
-  "Ainda dá tempo. Talvez.",
+  "Talvez ainda dê tempo. Talvez não.",
   "O ano está a correr. Tu estás a negociar com a preguiça.",
   "Reta final: agora ou mais uma desculpa premium.",
 ];

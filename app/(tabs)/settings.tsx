@@ -2,7 +2,6 @@ import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
-import AppHeader from "../../src/components/AppHeader";
 import { useAppTheme } from "../../src/theme/ThemeProvider";
 import { useAppFonts } from "../../src/hooks/useAppFonts";
 import ScreenBackground from "../../src/components/ScreenBackground";
@@ -20,12 +19,9 @@ export default function SettingsTab() {
     <ScreenBackground>
       <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
         <View style={styles.screen}>
-          <AppHeader subtitle="controlo mínimo para caos máximo" />
 
           <SectionHeader
             title="Definições"
-            subtitle="Estado da experiência, recursos ativos e informações da versão pública."
-            meta="v1.0"
           />
 
           <View style={styles.section}>
@@ -81,6 +77,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     paddingHorizontal: 20,
+    paddingTop: 28,
     paddingBottom: 16,
   },
   statusCard: {

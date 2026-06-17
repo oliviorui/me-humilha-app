@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
-import { View } from "react-native";
 
 import { useAppTheme } from "../../src/theme/ThemeProvider";
 
@@ -13,36 +12,14 @@ type TabIconProps = {
 };
 
 function TabIcon({ color, focused, name, focusedName }: TabIconProps) {
-  const { palette } = useAppTheme();
-
   return (
-    <View
-      style={[
-        styles.iconWrap,
-        focused
-          ? {
-              backgroundColor: palette.glow,
-              borderColor: palette.accent2,
-            }
-          : null,
-      ]}
-    >
-      <Ionicons name={focused ? focusedName : name} size={22} color={color} />
-    </View>
+    <Ionicons
+      name={focused ? focusedName : name}
+      size={focused ? 25 : 23}
+      color={color}
+    />
   );
 }
-
-const styles = {
-  iconWrap: {
-    width: 42,
-    height: 32,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "transparent",
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-  },
-};
 
 export default function TabsLayout() {
   const { palette, isDark } = useAppTheme();

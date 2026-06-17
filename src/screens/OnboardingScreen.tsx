@@ -65,10 +65,6 @@ export default function OnboardingScreen() {
             Aqui ninguém acredita no teu potencial.
           </Text>
 
-          <Text style={[styles.secondary, { color: palette.textMuted }]}>
-            Gera lapadas absurdas, guarda as piores e partilha a tua decadência com estilo.
-          </Text>
-
           <View
             style={[
               styles.highlight,
@@ -79,7 +75,7 @@ export default function OnboardingScreen() {
             ]}
           >
             <Text style={[styles.highlightText, { color: palette.accent2 }]}>
-              O app que te motiva no ódio.
+              Começa a humilhação.
             </Text>
           </View>
 

@@ -15,8 +15,7 @@ export default function GenerateButton({
   const { palette } = useAppTheme();
 
   return (
-    <View style={[styles.wrapper, { shadowColor: palette.accent2 }]}> 
-      <View style={styles.shine} pointerEvents="none" />
+    <View style={[styles.wrapper, { shadowColor: palette.accent2 }]}>
       <AppButton
         label={disabled ? "A pensar..." : "Nova humilhação"}
         icon={disabled ? "reload-outline" : "sparkles-outline"}
@@ -35,22 +34,10 @@ export default function GenerateButton({
 const styles = StyleSheet.create({
   wrapper: {
     width: "100%",
-    borderRadius: 18,
-    overflow: "hidden",
-    position: "relative",
+    borderRadius: 20,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.32,
-    shadowRadius: 24,
-    elevation: 6,
-  },
-  shine: {
-    position: "absolute",
-    top: 0,
-    left: -35,
-    width: 105,
-    height: "100%",
-    backgroundColor: "rgba(255,255,255,0.14)",
-    transform: [{ skewX: "-20deg" }],
-    zIndex: 2,
+    shadowOpacity: 0.18,
+    shadowRadius: 18,
+    elevation: 5,
   },
 });

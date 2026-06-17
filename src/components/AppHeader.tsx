@@ -36,13 +36,6 @@ export default function AppHeader({
           <Text style={[styles.logoText, { color: palette.text }]}>
             {title}
           </Text>
-
-          <Text
-            style={[styles.subtitle, { color: palette.textMuted }]}
-            numberOfLines={1}
-          >
-            {subtitle}
-          </Text>
         </View>
       </View>
 

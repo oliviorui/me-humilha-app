@@ -12,7 +12,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 
-import AppHeader from "../../src/components/AppHeader";
 import ScreenBackground from "../../src/components/ScreenBackground";
 import { Card, EmptyState, LoadingScreen, SectionHeader } from "../../src/components/ui";
 import { useAppTheme } from "../../src/theme/ThemeProvider";
@@ -70,10 +69,6 @@ export default function FavoritesTab() {
           >
             {item.quote}
           </Text>
-
-          <Text style={[styles.savedMeta, { color: palette.textMuted }]}>
-            Guardada
-          </Text>
         </View>
 
         <Pressable
@@ -104,11 +99,8 @@ export default function FavoritesTab() {
     <ScreenBackground>
       <SafeAreaView style={styles.safeArea} edges={["top"]}>
         <View style={styles.screen}>
-          <AppHeader subtitle="as lapadas que mereceram arquivo" />
-
           <SectionHeader
             title="Guardadas"
-            subtitle="As frases que bateram forte ficam aqui, mesmo offline."
             meta={favorites.length === 1 ? "1 salva" : `${favorites.length} salvas`}
           />
 
@@ -155,6 +147,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     paddingHorizontal: 20,
+    paddingTop: 28,
     paddingBottom: 16,
   },
   savedList: {
