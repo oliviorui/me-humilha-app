@@ -1,16 +1,11 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import ThemeToggle from "./ThemeToggle";
 import { useAppTheme } from "../theme/ThemeProvider";
 
 type AppHeaderProps = {
   title?: string;
-  subtitle?: string;
 };
 
-export default function AppHeader({
-  title = "ME HUMILHA",
-  subtitle = "realidade sem filtro",
-}: AppHeaderProps) {
+export default function AppHeader({ title = "ME HUMILHA" }: AppHeaderProps) {
   const { palette } = useAppTheme();
 
   return (
@@ -38,8 +33,6 @@ export default function AppHeader({
           </Text>
         </View>
       </View>
-
-      <ThemeToggle />
     </View>
   );
 }
@@ -49,7 +42,6 @@ const styles = StyleSheet.create({
     minHeight: 62,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     paddingTop: 8,
     paddingBottom: 12,
     gap: 12,
@@ -89,12 +81,5 @@ const styles = StyleSheet.create({
     fontSize: 24,
     letterSpacing: 2.6,
     lineHeight: 25,
-  },
-  subtitle: {
-    marginTop: 1,
-    fontFamily: "PlusJakartaSans_500Medium",
-    fontSize: 10.5,
-    letterSpacing: 0.3,
-    opacity: 0.72,
   },
 });
