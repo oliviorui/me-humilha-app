@@ -45,42 +45,17 @@ export default function AppButton({
   const isInactive = disabled || loading;
   const isPrimary = variant === "primary";
 
-  const content = (
-    <>
-      {loading ? (
-        <ActivityIndicator size="small" color={isPrimary ? "#FFFFFF" : palette.text} />
-      ) : icon ? (
-        <Ionicons
-          name={icon}
-          size={size === "lg" ? 19 : size === "sm" ? 14 : 16}
-          color={
-            isPrimary
-              ? "#FFFFFF"
-              : variant === "danger"
-                ? palette.danger
-                : palette.accent2
-          }
-        />
-      ) : null}
+  const iconColor = isPrimary
+    ? "#FFFFFF"
+    : variant === "danger"
+      ? palette.danger
+      : palette.accent2;
 
-      <Text
-        style={[
-          styles.label,
-          styles[`${size}Label`],
-          {
-            color: isPrimary
-              ? "#FFFFFF"
-              : variant === "danger"
-                ? palette.danger
-                : palette.text,
-          },
-        ]}
-        numberOfLines={1}
-      >
-        {loading ? "A carregar..." : label}
-      </Text>
-    </>
-  );
+  const labelColor = isPrimary
+    ? "#FFFFFF"
+    : variant === "danger"
+      ? palette.danger
+      : palette.text;
 
   return (
     <Pressable
@@ -94,9 +69,8 @@ export default function AppButton({
         styles[size],
         fullWidth ? styles.fullWidth : null,
         {
-          borderColor: variant === "ghost" ? "transparent" : palette.border,
-          backgroundColor:
-            variant === "ghost" ? "transparent" : palette.surface2,
+          borderColor: isPrimary || variant === "ghost" ? "transparent" : palette.border,
+          backgroundColor: isPrimary || variant === "ghost" ? "transparent" : palette.surface2,
           opacity: isInactive ? 0.58 : pressed ? 0.9 : 1,
           transform: [{ scale: pressed && !isInactive ? 0.98 : 1 }],
         },
@@ -105,22 +79,37 @@ export default function AppButton({
     >
       {isPrimary ? (
         <LinearGradient
+          pointerEvents="none"
           colors={[palette.accent2, palette.accent3, palette.accent2]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={[styles.gradient, styles[size]]}
-        >
-          {content}
-        </LinearGradient>
-      ) : (
-        content
-      )}
+          style={StyleSheet.absoluteFillObject}
+        />
+      ) : null}
+
+      {loading ? (
+        <ActivityIndicator size="small" color={isPrimary ? "#FFFFFF" : palette.text} />
+      ) : icon ? (
+        <Ionicons
+          name={icon}
+          size={size === "lg" ? 19 : size === "sm" ? 14 : 16}
+          color={iconColor}
+        />
+      ) : null}
+
+      <Text
+        style={[styles.label, styles[`${size}Label`], { color: labelColor }]}
+        numberOfLines={1}
+      >
+        {loading ? "A carregar..." : label}
+      </Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   base: {
+    position: "relative",
     borderWidth: 1,
     borderRadius: 999,
     flexDirection: "row",
@@ -143,13 +132,6 @@ const styles = StyleSheet.create({
   lg: {
     minHeight: 56,
     paddingHorizontal: 20,
-  },
-  gradient: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 9,
   },
   label: {
     fontFamily: "PlusJakartaSans_700Bold",

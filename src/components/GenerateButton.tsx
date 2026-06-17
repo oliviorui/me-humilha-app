@@ -15,7 +15,7 @@ export default function GenerateButton({
   const { palette } = useAppTheme();
 
   return (
-    <View style={[styles.wrapper, { shadowColor: palette.accent2 }]}>
+    <View style={[styles.wrapper, { shadowColor: palette.accent2 }]}> 
       <AppButton
         label={disabled ? "A pensar..." : "Nova humilhação"}
         icon={disabled ? "reload-outline" : "sparkles-outline"}
@@ -34,7 +34,7 @@ export default function GenerateButton({
 const styles = StyleSheet.create({
   wrapper: {
     width: "100%",
-    borderRadius: 20,
+    borderRadius: 999,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.18,
     shadowRadius: 18,
