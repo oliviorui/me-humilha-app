@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -16,11 +16,76 @@ import AppHeader from "../../src/components/AppHeader";
 import ScreenBackground from "../../src/components/ScreenBackground";
 import { useAppFonts } from "../../src/hooks/useAppFonts";
 import { useAppTheme } from "../../src/theme/ThemeProvider";
+import type { AppPalette } from "../../src/theme/palette";
 import {
   getFavorites,
   removeFavorite,
   type FavoriteItem,
 } from "../../src/utils/favorites";
+
+type FavoriteCardProps = {
+  item: FavoriteItem;
+  palette: AppPalette;
+  onRemove: (id: string) => void;
+};
+
+const FavoriteCard = memo(function FavoriteCard({
+  item,
+  palette,
+  onRemove,
+}: FavoriteCardProps) {
+  const handlePressRemove = useCallback(() => {
+    onRemove(item.id);
+  }, [item.id, onRemove]);
+
+  return (
+    <View
+      style={[
+        styles.savedItem,
+        {
+          backgroundColor: palette.surface,
+          borderColor: palette.border,
+          shadowColor: palette.shadow,
+        },
+      ]}
+    >
+      <Image
+        source={item.image}
+        style={styles.thumb}
+        resizeMode="cover"
+        accessibilityIgnoresInvertColors
+      />
+
+      <View style={styles.textBlock}>
+        <Text
+          style={[styles.savedText, { color: palette.text }]}
+          numberOfLines={3}
+        >
+          {item.quote}
+        </Text>
+      </View>
+
+      <Pressable
+        style={({ pressed }) => [
+          styles.savedDelete,
+          {
+            backgroundColor: palette.surface2,
+            borderColor: palette.border,
+            opacity: pressed ? 0.72 : 1,
+          },
+        ]}
+        onPress={handlePressRemove}
+        accessibilityRole="button"
+        accessibilityLabel="Remover frase guardada"
+        hitSlop={8}
+      >
+        <Ionicons name="trash-outline" size={16} color={palette.textMuted} />
+      </Pressable>
+    </View>
+  );
+});
+
+const keyExtractor = (item: FavoriteItem) => item.id;
 
 export default function FavoritesTab() {
   const { palette } = useAppTheme();
@@ -35,58 +100,28 @@ export default function FavoritesTab() {
   useFocusEffect(
     useCallback(() => {
       void loadFavorites();
-    }, [loadFavorites]),
+    }, [loadFavorites])
   );
 
-  async function handleRemove(id: string) {
+  const handleRemove = useCallback(async (id: string) => {
+    const previousFavorites = favorites;
+
+    setFavorites((current) => current.filter((item) => item.id !== id));
+
     try {
       await removeFavorite(id);
-      await loadFavorites();
     } catch {
+      setFavorites(previousFavorites);
       Alert.alert("Erro", "Não foi possível remover.");
     }
-  }
+  }, [favorites]);
 
-  function renderItem({ item }: { item: FavoriteItem }) {
-    return (
-      <View
-        style={[
-          styles.savedItem,
-          {
-            backgroundColor: palette.surface,
-            borderColor: palette.border,
-            shadowColor: palette.shadow,
-          },
-        ]}
-      >
-        <Image source={item.image} style={styles.thumb} resizeMode="cover" />
-
-        <View style={styles.textBlock}>
-          <Text
-            style={[styles.savedText, { color: palette.text }]}
-            numberOfLines={3}
-          >
-            {item.quote}
-          </Text>
-        </View>
-
-        <Pressable
-          style={({ pressed }) => [
-            styles.savedDelete,
-            {
-              backgroundColor: palette.surface2,
-              borderColor: palette.border,
-              opacity: pressed ? 0.72 : 1,
-            },
-          ]}
-          onPress={() => handleRemove(item.id)}
-          accessibilityLabel="Remover frase guardada"
-        >
-          <Ionicons name="trash-outline" size={16} color={palette.textMuted} />
-        </Pressable>
-      </View>
-    );
-  }
+  const renderItem = useCallback(
+    ({ item }: { item: FavoriteItem }) => (
+      <FavoriteCard item={item} palette={palette} onRemove={handleRemove} />
+    ),
+    [handleRemove, palette]
+  );
 
   if (!fontsLoaded) {
     return <ScreenBackground />;
@@ -100,22 +135,23 @@ export default function FavoritesTab() {
 
           <View style={styles.titleRow}>
             <View>
-              <Text style={[styles.screenTitle, { color: palette.text }]}>
-                Guardadas
-              </Text>
-              <Text style={[styles.screenSub, { color: palette.textMuted }]}>
-                {favorites.length === 1
+              <Text style={[styles.screenTitle, { color: palette.text }]}>Guardadas</Text>
+              <Text style={[styles.screenSub, { color: palette.textMuted }]}>{favorites.length === 1
                   ? "1 frase salva"
-                  : `${favorites.length} frases salvas`}
-              </Text>
+                  : `${favorites.length} frases salvas`}</Text>
             </View>
           </View>
 
           <FlatList
             data={favorites}
-            keyExtractor={(item) => item.id}
+            keyExtractor={keyExtractor}
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
+            removeClippedSubviews
+            initialNumToRender={8}
+            maxToRenderPerBatch={8}
+            updateCellsBatchingPeriod={40}
+            windowSize={5}
             contentContainerStyle={[
               styles.savedList,
               favorites.length === 0 ? styles.savedListEmpty : null,
@@ -158,15 +194,15 @@ export default function FavoritesTab() {
                     },
                   ]}
                   onPress={() => router.navigate("/(tabs)")}
+                  accessibilityRole="button"
+                  accessibilityLabel="Gerar primeira frase"
                 >
                   <Ionicons
                     name="sparkles-outline"
                     size={16}
                     color={palette.accent2}
                   />
-                  <Text
-                    style={[styles.emptyButtonText, { color: palette.text }]}
-                  >
+                  <Text style={[styles.emptyButtonText, { color: palette.text }]}>
                     Gerar primeira
                   </Text>
                 </Pressable>
@@ -194,7 +230,6 @@ const styles = StyleSheet.create({
   screenTitle: {
     fontFamily: "PlusJakartaSans_700Bold",
     fontSize: 28,
-    letterSpacing: 2,
     lineHeight: 32,
   },
   screenSub: {
@@ -239,12 +274,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     lineHeight: 21,
     letterSpacing: 0.2,
-  },
-  savedMeta: {
-    marginTop: 4,
-    fontFamily: "PlusJakartaSans_500Medium",
-    fontSize: 10.5,
-    opacity: 0.62,
   },
   savedDelete: {
     width: 36,

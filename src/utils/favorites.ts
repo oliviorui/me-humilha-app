@@ -16,6 +16,8 @@ const LEGACY_STORAGE_KEY = "reverse_coach_favorites";
 const MAX_FAVORITES = 150;
 
 let favoritesWriteQueue: Promise<unknown> = Promise.resolve();
+let favoritesCache: FavoriteItem[] | null = null;
+let hasMigratedLegacyData = false;
 
 function enqueueFavoritesWrite<T>(operation: () => Promise<T>): Promise<T> {
   const queuedOperation = favoritesWriteQueue.then(operation, operation);
@@ -84,6 +86,11 @@ async function getStoredRawFavorites(): Promise<string | null> {
     return currentData;
   }
 
+  if (hasMigratedLegacyData) {
+    return null;
+  }
+
+  hasMigratedLegacyData = true;
   const legacyData = await AsyncStorage.getItem(LEGACY_STORAGE_KEY);
 
   if (legacyData) {
@@ -95,24 +102,37 @@ async function getStoredRawFavorites(): Promise<string | null> {
   return null;
 }
 
+async function persistFavorites(favorites: FavoriteItem[]) {
+  favoritesCache = favorites;
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+}
+
 export async function getFavorites(): Promise<FavoriteItem[]> {
+  if (favoritesCache) {
+    return favoritesCache;
+  }
+
   try {
     const rawData = await getStoredRawFavorites();
 
     if (!rawData) {
-      return [];
+      favoritesCache = [];
+      return favoritesCache;
     }
 
     const parsedData: unknown = JSON.parse(rawData);
     const normalizedFavorites = normalizeFavorites(parsedData);
 
-    if (JSON.stringify(parsedData) !== JSON.stringify(normalizedFavorites)) {
+    favoritesCache = normalizedFavorites;
+
+    if (rawData !== JSON.stringify(normalizedFavorites)) {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedFavorites));
     }
 
     return normalizedFavorites;
   } catch {
-    return [];
+    favoritesCache = [];
+    return favoritesCache;
   }
 }
 
@@ -136,7 +156,7 @@ export async function saveFavorite(
 
       const updatedFavorites = normalizeFavorites([item, ...currentFavorites]);
 
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedFavorites));
+      await persistFavorites(updatedFavorites);
 
       return {
         saved: true,
@@ -156,7 +176,7 @@ export async function removeFavorite(id: string): Promise<void> {
         (favorite) => favorite.id !== id
       );
 
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedFavorites));
+      await persistFavorites(updatedFavorites);
     } catch {
       throw new Error("Não foi possível remover o favorito.");
     }

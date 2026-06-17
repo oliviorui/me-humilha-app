@@ -6,6 +6,7 @@ import {
   View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { memo } from "react";
 
 import { useAppTheme } from "../theme/ThemeProvider";
 
@@ -28,7 +29,7 @@ type ActionButtonProps = {
   disabled?: boolean;
 };
 
-function ActionButton({
+const ActionButton = memo(function ActionButton({
   icon,
   label,
   onPress,
@@ -69,9 +70,9 @@ function ActionButton({
       </Text>
     </Pressable>
   );
-}
+});
 
-export default function QuotePanel({
+const QuotePanel = memo(function QuotePanel({
   quote,
   image,
   onFavorite,
@@ -209,7 +210,9 @@ export default function QuotePanel({
       </View>
     </View>
   );
-}
+});
+
+export default QuotePanel;
 
 const styles = StyleSheet.create({
   wrap: {

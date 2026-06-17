@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { useAppTheme } from "../theme/ThemeProvider";
 
@@ -5,7 +6,7 @@ type AppHeaderProps = {
   title?: string;
 };
 
-export default function AppHeader({ title = "ME HUMILHA" }: AppHeaderProps) {
+function AppHeader({ title = "ME HUMILHA" }: AppHeaderProps) {
   const { palette } = useAppTheme();
 
   return (
@@ -36,6 +37,8 @@ export default function AppHeader({ title = "ME HUMILHA" }: AppHeaderProps) {
     </View>
   );
 }
+
+export default memo(AppHeader);
 
 const styles = StyleSheet.create({
   header: {

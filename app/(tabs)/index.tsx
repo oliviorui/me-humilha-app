@@ -1,6 +1,6 @@
 import { InteractionManager, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as Sharing from "expo-sharing";
 import ViewShot from "react-native-view-shot";
 
@@ -29,6 +29,12 @@ type ToastState = {
   kind: ToastKind;
 };
 
+function waitForNextFrame() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => resolve());
+  });
+}
+
 export default function HomeTab() {
   const { fontsLoaded } = useAppFonts();
   const { palette } = useAppTheme();
@@ -47,9 +53,11 @@ export default function HomeTab() {
   const [isLiked, setIsLiked] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [shouldRenderSharePoster, setShouldRenderSharePoster] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
 
   const yearProgress = getYearProgress();
+  const actionsDisabled = isAnimating || isSaving || isSharing;
 
   useEffect(() => {
     return () => {
@@ -65,21 +73,24 @@ export default function HomeTab() {
     };
   }, []);
 
-  function showToast(message: string, kind: ToastKind = "success") {
-    if (toastTimerRef.current) {
-      clearTimeout(toastTimerRef.current);
-    }
-
-    setToast({ message, kind });
-
-    toastTimerRef.current = setTimeout(() => {
-      if (isMountedRef.current) {
-        setToast(null);
+  const showToast = useCallback(
+    (message: string, kind: ToastKind = "success") => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
       }
-    }, 2200);
-  }
 
-  function handleGenerate() {
+      setToast({ message, kind });
+
+      toastTimerRef.current = setTimeout(() => {
+        if (isMountedRef.current) {
+          setToast(null);
+        }
+      }, 2200);
+    },
+    []
+  );
+
+  const handleGenerate = useCallback(() => {
     if (isAnimating) {
       return;
     }
@@ -92,16 +103,17 @@ export default function HomeTab() {
         return;
       }
 
-      const nextQuote = getRandomItem(quotes, quoteState.index);
-      const nextImage = getRandomItem(images, imageState.index);
-
-      setQuoteState(nextQuote);
-      setImageState(nextImage);
+      setQuoteState((currentQuoteState) =>
+        getRandomItem(quotes, currentQuoteState.index)
+      );
+      setImageState((currentImageState) =>
+        getRandomItem(images, currentImageState.index)
+      );
       setIsAnimating(false);
     }, 750);
-  }
+  }, [isAnimating]);
 
-  async function handleSave() {
+  const handleSave = useCallback(async () => {
     if (isAnimating || isSaving) {
       return;
     }
@@ -121,20 +133,23 @@ export default function HomeTab() {
         return;
       }
 
-      showToast("Lapada guardada com sucesso.", "success");
+      showToast("Essa doeu. Guardada.", "success");
     } catch {
       showToast("Não foi possível guardar agora.", "error");
     } finally {
-      setIsSaving(false);
+      if (isMountedRef.current) {
+        setIsSaving(false);
+      }
     }
-  }
+  }, [imageState.index, imageState.item, isAnimating, isSaving, quoteState.index, quoteState.item, showToast]);
 
-  async function handleShare() {
+  const handleShare = useCallback(async () => {
     if (isAnimating || isSharing) {
       return;
     }
 
     setIsSharing(true);
+    setShouldRenderSharePoster(true);
 
     try {
       const isSharingAvailable = await Sharing.isAvailableAsync();
@@ -147,6 +162,7 @@ export default function HomeTab() {
       await new Promise<void>((resolve) => {
         InteractionManager.runAfterInteractions(() => resolve());
       });
+      await waitForNextFrame();
 
       const capturedUri = await shareCardRef.current?.capture?.();
 
@@ -163,13 +179,16 @@ export default function HomeTab() {
     } catch {
       showToast("Não foi possível partilhar agora.", "error");
     } finally {
-      setIsSharing(false);
+      if (isMountedRef.current) {
+        setIsSharing(false);
+        setShouldRenderSharePoster(false);
+      }
     }
-  }
+  }, [isAnimating, isSharing, showToast]);
 
-  function handleFavorite() {
+  const handleFavorite = useCallback(() => {
     setIsLiked((current) => !current);
-  }
+  }, []);
 
   if (!fontsLoaded) {
     return <ScreenBackground />;
@@ -196,14 +215,14 @@ export default function HomeTab() {
               onShare={handleShare}
               isLiked={isLiked}
               isAnimating={isAnimating}
-              actionsDisabled={isAnimating || isSaving || isSharing}
+              actionsDisabled={actionsDisabled}
             />
           </View>
 
           <View style={styles.buttonWrap}>
             <GenerateButton
               onGenerate={handleGenerate}
-              disabled={isAnimating || isSaving || isSharing}
+              disabled={actionsDisabled}
             />
           </View>
 
@@ -234,21 +253,23 @@ export default function HomeTab() {
             </View>
           ) : null}
 
-          <View style={styles.hiddenPosterWrap} pointerEvents="none">
-            <ViewShot
-              ref={shareCardRef}
-              style={styles.shareShot}
-              options={{
-                format: "png",
-                quality: 1,
-                result: "tmpfile",
-                width: 1080,
-                height: 1080,
-              }}
-            >
-              <SharePoster quote={quoteState.item} image={imageState.item} />
-            </ViewShot>
-          </View>
+          {shouldRenderSharePoster ? (
+            <View style={styles.hiddenPosterWrap} pointerEvents="none">
+              <ViewShot
+                ref={shareCardRef}
+                style={styles.shareShot}
+                options={{
+                  format: "png",
+                  quality: 1,
+                  result: "tmpfile",
+                  width: 1080,
+                  height: 1080,
+                }}
+              >
+                <SharePoster quote={quoteState.item} image={imageState.item} />
+              </ViewShot>
+            </View>
+          ) : null}
         </View>
       </SafeAreaView>
     </ScreenBackground>

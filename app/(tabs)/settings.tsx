@@ -175,6 +175,6 @@ const styles = StyleSheet.create({
     fontFamily: "PlusJakartaSans_500Medium",
     fontSize: 11,
     letterSpacing: 0.4,
-    opacity: 0.45,
+    opacity: 0.50,
   },
 });

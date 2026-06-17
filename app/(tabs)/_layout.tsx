@@ -65,7 +65,7 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: palette.textMuted,
         tabBarLabelStyle: {
           fontFamily: "PlusJakartaSans_700Bold",
-          fontSize: 10.5,
+          fontSize: 10,
           marginTop: 1,
         },
         tabBarItemStyle: {
@@ -91,7 +91,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="favorites"
         options={{
-          title: "Guardadas",
+          title: "Salvas",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               color={color}

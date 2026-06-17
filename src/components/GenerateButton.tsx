@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { AppButton } from "./ui";
@@ -8,7 +9,7 @@ type GenerateButtonProps = {
   disabled?: boolean;
 };
 
-export default function GenerateButton({
+function GenerateButton({
   onGenerate,
   disabled = false,
 }: GenerateButtonProps) {
@@ -30,6 +31,8 @@ export default function GenerateButton({
     </View>
   );
 }
+
+export default memo(GenerateButton);
 
 const styles = StyleSheet.create({
   wrapper: {

@@ -1,12 +1,12 @@
-import { ReactNode } from "react";
-import { StyleSheet, View } from "react-native";
+import { memo, ReactNode } from "react";
+import { StyleSheet, View, type ViewStyle } from "react-native";
 import { useAppTheme } from "../theme/ThemeProvider";
 
 type ScreenBackgroundProps = {
   children?: ReactNode;
 };
 
-export default function ScreenBackground({
+function ScreenBackground({
   children,
 }: ScreenBackgroundProps) {
   const { palette } = useAppTheme();
@@ -32,24 +32,35 @@ export default function ScreenBackground({
       />
 
       <View style={styles.noiseLayer}>
-        <View style={[styles.noiseDot, styles.dot1, { backgroundColor: palette.text }]} />
-        <View style={[styles.noiseDot, styles.dot2, { backgroundColor: palette.text }]} />
-        <View style={[styles.noiseDot, styles.dot3, { backgroundColor: palette.text }]} />
-        <View style={[styles.noiseDot, styles.dot4, { backgroundColor: palette.text }]} />
-        <View style={[styles.noiseDot, styles.dot5, { backgroundColor: palette.text }]} />
-        <View style={[styles.noiseDot, styles.dot6, { backgroundColor: palette.text }]} />
-        <View style={[styles.noiseDot, styles.dot7, { backgroundColor: palette.text }]} />
-        <View style={[styles.noiseDot, styles.dot8, { backgroundColor: palette.text }]} />
-        <View style={[styles.noiseDot, styles.dot9, { backgroundColor: palette.text }]} />
-        <View style={[styles.noiseDot, styles.dot10, { backgroundColor: palette.text }]} />
-        <View style={[styles.noiseDot, styles.dot11, { backgroundColor: palette.text }]} />
-        <View style={[styles.noiseDot, styles.dot12, { backgroundColor: palette.text }]} />
+        {noiseDots.map((dotStyle, index) => (
+          <View
+            key={index}
+            style={[styles.noiseDot, dotStyle, { backgroundColor: palette.text }]}
+          />
+        ))}
       </View>
 
       <View style={styles.content}>{children}</View>
     </View>
   );
 }
+
+export default memo(ScreenBackground);
+
+const noiseDots: ViewStyle[] = [
+  { top: "8%", left: "14%" },
+  { top: "14%", left: "72%" },
+  { top: "22%", left: "44%" },
+  { top: "31%", left: "87%" },
+  { top: "39%", left: "19%" },
+  { top: "47%", left: "63%" },
+  { top: "55%", left: "8%" },
+  { top: "61%", left: "78%" },
+  { top: "71%", left: "29%" },
+  { top: "79%", left: "58%" },
+  { top: "86%", left: "90%" },
+  { top: "92%", left: "12%" },
+];
 
 const styles = StyleSheet.create({
   container: {
@@ -85,18 +96,6 @@ const styles = StyleSheet.create({
     height: 2,
     borderRadius: 999,
   },
-  dot1: { top: "8%", left: "14%" },
-  dot2: { top: "14%", left: "72%" },
-  dot3: { top: "22%", left: "44%" },
-  dot4: { top: "31%", left: "87%" },
-  dot5: { top: "39%", left: "19%" },
-  dot6: { top: "47%", left: "63%" },
-  dot7: { top: "55%", left: "8%" },
-  dot8: { top: "61%", left: "78%" },
-  dot9: { top: "71%", left: "29%" },
-  dot10: { top: "79%", left: "58%" },
-  dot11: { top: "86%", left: "90%" },
-  dot12: { top: "92%", left: "12%" },
   content: {
     flex: 1,
   },
