@@ -77,10 +77,6 @@ O utilizador pode guardar frases favoritas localmente.
 
 O utilizador pode partilhar uma arte visual gerada com a frase atual.
 
-### Tema claro / escuro
-
-O app permite alternar entre modo claro e escuro com persistência local.
-
 ### Onboarding
 
 Primeira experiência guiada para novos utilizadores.
